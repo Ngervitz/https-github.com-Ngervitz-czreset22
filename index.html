@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Credizona Reset — Diagnóstico financiero completo</title>
+  <meta name="description" content="Entendé qué está frenando tu perfil crediticio. Reporte Equifax incluido, interpretación clara y plan de acción." />
+  <style>
+    :root{
+      --bg:#050914;
+      --bg2:#071225;
+      --panel:#0b1630;
+      --panel2:#101b38;
+      --text:#f7fbff;
+      --muted:#a9b4cc;
+      --green:#5cff70;
+      --green2:#35d85e;
+      --purple:#261249;
+      --line:rgba(255,255,255,.12);
+      --danger:#ff7538;
+      --red:#e43345;
+      --gold:#ffd447;
+      --shadow:0 30px 80px rgba(0,0,0,.45);
+      --radius:24px;
+      --max:1180px;
+      --grad:linear-gradient(90deg,#5cff70 0%,#35d85e 100%);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(81,255,105,.15), transparent 25%),
+        radial-gradient(circle at 70% 8%, rgba(85,46,180,.28), transparent 25%),
+        linear-gradient(180deg,#050914 0%,#071225 52%,#050914 100%);
+      color:var(--text);
+      line-height:1.45;
+    }
+    a{text-decoration:none;color:inherit}
+    .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+    .nav{
+      position:sticky;top:0;z-index:50;
+      background:rgba(5,9,20,.88);backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .nav-inner{
+      max-width:var(--max);margin:0 auto;padding:18px 22px;
+      display:flex;align-items:center;justify-content:space-between;gap:18px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:24px;letter-spacing:-.04em}
+    .brand-icon{
+      width:43px;height:43px;border-radius:14px;background:var(--grad);
+      color:#050914;display:grid;place-items:center;font-weight:1000;font-size:25px;
+      box-shadow:0 0 28px rgba(92,255,112,.22);
+    }
+    .brand span:last-child{color:var(--green)}
+    .nav-links{display:flex;gap:28px;font-size:13px;font-weight:900;text-transform:uppercase}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:10px;
+      border-radius:12px;padding:16px 24px;font-weight:950;text-transform:uppercase;
+      border:1px solid transparent;cursor:pointer;box-shadow:var(--shadow);
+      letter-spacing:.02em;
+    }
+    .btn-primary{background:var(--grad);color:#041008}
+    .btn-secondary{background:rgba(255,255,255,.05);border-color:var(--line);box-shadow:none}
+    .hero{
+      padding:54px 0 30px;
+      display:grid;grid-template-columns:1.02fr .98fr;gap:34px;align-items:center;
+    }
+    .kicker{
+      display:inline-flex;gap:10px;align-items:center;border:1px solid rgba(92,255,112,.28);
+      color:var(--green);background:rgba(92,255,112,.08);
+      border-radius:999px;padding:10px 14px;font-weight:900;font-size:13px;text-transform:uppercase;
+    }
+    h1{
+      margin:18px 0 18px;
+      font-size:58px;line-height:.96;letter-spacing:-.055em;text-transform:uppercase;
+      max-width:680px;
+    }
+    h1 strong{color:var(--green)}
+    .sub{font-size:20px;color:#d5dbea;max-width:620px;margin:0 0 26px}
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0 16px}
+    .secure{display:flex;gap:8px;align-items:center;color:#dbe7df;font-size:14px;font-weight:750}
+    .hero-visual{
+      display:grid;grid-template-columns:1fr .68fr;gap:20px;align-items:center;
+    }
+    .phone{
+      border-radius:38px;background:#07111f;border:10px solid #1a2232;
+      box-shadow:0 30px 90px rgba(0,0,0,.55);
+      padding:20px;min-height:430px;position:relative;overflow:hidden;
+    }
+    .phone:before{
+      content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);
+      width:105px;height:22px;border-radius:999px;background:#141d2e;
+    }
+    .phone-content{padding-top:34px}
+    .score-title{text-align:center;font-size:13px;font-weight:950;text-transform:uppercase;color:#fff}
+    .score-number{text-align:center;color:var(--danger);font-size:58px;font-weight:1000;line-height:1;letter-spacing:-.06em}
+    .risk{text-align:center;color:var(--danger);font-weight:950;text-transform:uppercase;margin-bottom:16px}
+    .gauge{
+      width:210px;height:110px;margin:0 auto 16px;border-radius:210px 210px 0 0;
+      background:conic-gradient(from 270deg,#e33142 0 25%,#ffb132 25% 62%,#43df66 62% 100%);
+      position:relative;overflow:hidden;
+    }
+    .gauge:after{
+      content:"";position:absolute;left:28px;right:28px;bottom:0;height:78px;background:#07111f;
+      border-radius:150px 150px 0 0;
+    }
+    .needle{
+      position:absolute;width:90px;height:4px;background:#fff;bottom:12px;left:50%;
+      transform-origin:left center;transform:rotate(-34deg);z-index:3;border-radius:99px;
+    }
+    .factor{
+      display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin:10px 0;
+      font-size:13px;font-weight:800;
+    }
+    .factor-icon{
+      width:28px;height:28px;border-radius:8px;border:1px solid currentColor;
+      display:grid;place-items:center;color:var(--danger);flex:0 0 auto;
+    }
+    .side-punch{display:grid;gap:18px}
+    .circle{
+      width:168px;height:168px;border-radius:999px;border:4px solid var(--green);
+      display:grid;place-items:center;text-align:center;color:var(--green);font-weight:1000;
+      font-size:23px;line-height:1.05;text-transform:uppercase;box-shadow:0 0 30px rgba(92,255,112,.15);
+      margin:auto;
+    }
+    .side-copy h3{font-size:26px;line-height:1.05;margin:0 0 10px}
+    .side-copy p{color:#d3d9e8;margin:0;font-size:17px}
+    .pain-strip{
+      margin-top:10px;border-radius:26px;background:linear-gradient(180deg,rgba(16,27,60,.96),rgba(10,19,41,.96));
+      border:1px solid var(--line);box-shadow:var(--shadow);padding:22px;
+    }
+    .pain-title{text-align:center;font-weight:950;text-transform:uppercase;font-size:22px;margin-bottom:18px}
+    .pain-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+    .pain{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;border-right:1px solid rgba(255,255,255,.14);padding-right:14px}
+    .pain:last-child{border-right:none}
+    .pain-icon{
+      width:58px;height:58px;border-radius:999px;border:2px solid var(--green);
+      color:var(--green);display:grid;place-items:center;font-size:25px;flex:0 0 auto;
+    }
+    .pain strong{display:block;font-size:16px}
+    section{padding:34px 0}
+    .offer-panel{
+      border:2px solid var(--green);border-radius:24px;background:linear-gradient(180deg,rgba(11,22,48,.92),rgba(8,18,38,.96));
+      box-shadow:var(--shadow);padding:28px;display:grid;grid-template-columns:.92fr 1.08fr .5fr;gap:30px;align-items:center;
+    }
+    .equifax-card{
+      background:linear-gradient(180deg,#17243b,#0e182b);border-radius:22px;padding:24px;text-align:center;
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .include-pill{display:inline-block;background:var(--green);color:#041008;font-weight:1000;text-transform:uppercase;border-radius:8px;padding:6px 10px;font-size:12px}
+    .equifax-card h2{font-size:34px;line-height:.95;letter-spacing:-.05em;text-transform:uppercase;margin:18px 0 10px}
+    .eq-logo{color:#e92e43;font-size:38px;font-weight:1000;font-style:italic;letter-spacing:-.06em}
+    .offer-copy h2{font-size:30px;line-height:1.05;margin:0 0 12px}
+    .offer-copy h2 span{color:var(--green)}
+    .checks{display:grid;gap:12px;margin-top:18px}
+    .check{display:flex;gap:10px;align-items:flex-start;font-weight:750}
+    .check:before{content:"✓";width:23px;height:23px;border-radius:999px;background:var(--green);color:#041008;display:grid;place-items:center;font-weight:1000;flex:0 0 auto}
+    .stamp{
+      width:155px;height:155px;border-radius:999px;background:#fff;color:#151515;
+      display:grid;place-items:center;text-align:center;font-size:26px;line-height:1;
+      font-weight:1000;text-transform:uppercase;transform:rotate(-10deg);
+      border:6px solid #ececec;box-shadow:0 15px 30px rgba(0,0,0,.35);
+    }
+    .stamp span{color:#d92035}
+    .steps-title{text-align:center;font-size:22px;font-weight:950;text-transform:uppercase;margin:0 0 24px}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-items:start}
+    .step{text-align:center;position:relative}
+    .step:not(:last-child):after{content:"→";position:absolute;right:-20px;top:52px;font-size:36px;color:#fff}
+    .step-icon{
+      width:92px;height:92px;border-radius:999px;margin:0 auto 14px;background:rgba(255,255,255,.06);
+      border:1px solid var(--line);display:grid;place-items:center;color:var(--green);font-size:38px;
+      position:relative;
+    }
+    .step-num{
+      position:absolute;top:-6px;left:-6px;background:var(--green);color:#041008;
+      width:27px;height:27px;border-radius:999px;font-weight:1000;display:grid;place-items:center;font-size:13px;
+    }
+    .step h3{font-size:16px;text-transform:uppercase;margin:0 0 6px}
+    .step p{margin:0;color:var(--muted);font-size:14px}
+    .pricing{
+      border:2px solid var(--green);border-radius:24px;padding:28px;background:linear-gradient(180deg,rgba(11,22,48,.96),rgba(8,18,38,.96));
+      display:grid;grid-template-columns:.9fr 1.1fr .9fr;gap:28px;align-items:center;
+    }
+    .price-box h3{text-transform:uppercase;margin:0 0 10px}
+    .price{font-size:72px;font-weight:1000;letter-spacing:-.08em;line-height:1}
+    .price span{color:var(--green)}
+    .access{margin-top:18px;font-weight:950;text-transform:uppercase;color:#fff}
+    .value h3{text-transform:uppercase;margin:0 0 10px}
+    .small-copy{color:var(--muted);margin:0 0 16px}
+    .features{display:grid;gap:10px}
+    .feature{font-weight:850}
+    .feature:before{content:"✓";color:var(--green);font-size:24px;margin-right:10px}
+    .why h3{text-transform:uppercase;margin:0 0 10px}
+    .why p{color:#dce4f5;margin:0 0 18px}
+    .trustbar{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:28px}
+    .trustitem{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
+    .trusticon{width:56px;height:56px;border-radius:999px;border:2px solid var(--green);color:var(--green);display:grid;place-items:center;font-size:25px}
+    .trustitem strong{display:block;font-size:18px}
+    .trustitem span{color:var(--muted)}
+    .closing{
+      margin:34px 0 70px;border-radius:24px;background:linear-gradient(90deg,rgba(72,25,115,.75),rgba(15,22,50,.9));
+      border:1px solid rgba(255,255,255,.10);padding:28px;display:grid;grid-template-columns:1fr .45fr;gap:24px;align-items:center;
+    }
+    .closing h2{text-transform:uppercase;font-size:34px;line-height:1;margin:0 0 8px}
+    .closing p{margin:0;color:#f0f2ff;font-size:19px}
+    .rating{border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:18px;text-align:center}
+    .stars{color:var(--gold);font-size:25px;letter-spacing:3px}
+    .sticky{
+      position:sticky;bottom:0;z-index:60;background:rgba(5,9,20,.88);backdrop-filter:blur(14px);
+      border-top:1px solid rgba(255,255,255,.08);
+    }
+    .sticky-inner{
+      max-width:var(--max);margin:0 auto;padding:12px 22px;display:flex;gap:14px;align-items:center;justify-content:space-between;
+    }
+    .sticky-copy strong{display:block}.sticky-copy span{color:var(--muted);font-size:14px}
+    @media(max-width:980px){
+      .nav-links{display:none}.hero,.hero-visual,.offer-panel,.pricing,.closing{grid-template-columns:1fr}
+      h1{font-size:42px}.pain-grid,.steps,.trustbar{grid-template-columns:1fr}
+      .pain{border-right:none;border-bottom:1px solid rgba(255,255,255,.14);padding-bottom:14px}.pain:last-child{border-bottom:none}
+      .step:not(:last-child):after{display:none}.sticky-inner{flex-direction:column;align-items:stretch}.sticky-copy{text-align:center}
+      .circle{width:140px;height:140px}.stamp{margin:auto}
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#"><div class="brand-icon">↻</div><div>CREDIZONA <span>RESET</span></div></a>
+      <div class="nav-links">
+        <a href="#funciona">¿Cómo funciona?</a>
+        <a href="#incluye">¿Qué incluye?</a>
+        <a href="#precio">Beneficios</a>
+        <a href="#precio">Precio</a>
+      </div>
+      <a class="btn btn-primary" href="#precio">Obtener mi diagnóstico</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <div class="kicker">Diagnóstico completo post-rechazo</div>
+        <h1>Entendé qué te está frenando. Corregí lo que importa. <strong>Volvé a calificar.</strong></h1>
+        <p class="sub">El diagnóstico completo que te muestra qué está afectando tu perfil crediticio y cómo salir de deudas de manera definitiva.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#precio">Quiero mi diagnóstico completo →</a>
+          <a class="btn btn-secondary" href="#incluye">Ver qué incluye</a>
+        </div>
+        <div class="secure">🔒 Pago 100% seguro. Tus datos están protegidos.</div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="phone">
+          <div class="phone-content">
+            <div class="score-title">Tu score actual</div>
+            <div class="score-number">579</div>
+            <div class="risk">Riesgo alto</div>
+            <div class="gauge"><div class="needle"></div></div>
+            <div class="factor"><div class="factor-icon">!</div><div>Deuda en mora<br><small>Impacto alto</small></div></div>
+            <div class="factor"><div class="factor-icon">↯</div><div>Uso alto de crédito<br><small>Impacto medio</small></div></div>
+            <div class="factor"><div class="factor-icon">?</div><div>Consultas recientes<br><small>Impacto bajo</small></div></div>
+          </div>
+        </div>
+        <div class="side-punch">
+          <div class="circle">Tu cambio<br>empieza<br>hoy</div>
+          <div class="side-copy">
+            <h3>No es suerte.<br>Es información.</h3>
+            <p>La mayoría de los rechazos tienen una causa concreta. Nosotros te la mostramos y te decimos qué hacer.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pain-strip">
+      <div class="pain-title">¿Te sentís identificado?</div>
+      <div class="pain-grid">
+        <div class="pain"><div class="pain-icon">☹</div><strong>Pagás, pero nunca alcanzás a salir.</strong></div>
+        <div class="pain"><div class="pain-icon">×</div><strong>Te rechazan créditos y no sabés por qué.</strong></div>
+        <div class="pain"><div class="pain-icon">⌕</div><strong>No entendés tu reporte y qué significa cada cosa.</strong></div>
+        <div class="pain"><div class="pain-icon">▣</div><strong>Probaste de todo y nada cambia.</strong></div>
+      </div>
+    </section>
+
+    <section id="incluye">
+      <div class="offer-panel">
+        <div class="equifax-card">
+          <div class="include-pill">Incluye</div>
+          <h2>Tu reporte<br>Equifax</h2>
+          <div style="border:1px solid var(--green);color:var(--green);border-radius:999px;padding:7px 10px;font-weight:900;text-transform:uppercase;margin:12px 0">Incluido en tu diagnóstico</div>
+          <div class="eq-logo">EQUIFAX</div>
+        </div>
+
+        <div class="offer-copy">
+          <h2>No solo te damos el reporte.<br><span>Te lo explicamos y te damos un plan de acción.</span></h2>
+          <div class="checks">
+            <div class="check">Acceso a tu reporte crediticio Equifax — valor público aprox. $490</div>
+            <div class="check">Análisis claro de qué te está afectando</div>
+            <div class="check">Plan personalizado para mejorar tu perfil</div>
+            <div class="check">Estrategia para salir de deudas y volver a calificar</div>
+          </div>
+        </div>
+
+        <div class="stamp">Reporte<br><span>Equifax</span><br>incluido</div>
+      </div>
+    </section>
+
+    <section id="funciona">
+      <div class="steps-title">Así funciona</div>
+      <div class="steps">
+        <div class="step"><div class="step-icon"><div class="step-num">1</div>💳</div><h3>Comprás tu diagnóstico</h3><p>Pago 100% seguro en menos de 1 minuto.</p></div>
+        <div class="step"><div class="step-icon"><div class="step-num">2</div>📄</div><h3>Autorizás tu reporte</h3><p>Con tu consentimiento consultamos Equifax.</p></div>
+        <div class="step"><div class="step-icon"><div class="step-num">3</div>📈</div><h3>Analizamos todo</h3><p>Revisamos tu reporte y tus deudas a fondo.</p></div>
+        <div class="step"><div class="step-icon"><div class="step-num">4</div>✅</div><h3>Recibís tu plan completo</h3><p>Diagnóstico con pasos claros y accionables.</p></div>
+      </div>
+    </section>
+
+    <section id="precio" class="pricing">
+      <div class="price-box">
+        <h3>Diagnóstico completo</h3>
+        <div class="price">USD <span>20</span></div>
+        <div class="access">⚡ Acceso inmediato</div>
+      </div>
+
+      <div>
+        <div class="features">
+          <div class="feature">Análisis de tus deudas</div>
+          <div class="feature">Reporte Equifax incluido — valor público aprox. $490</div>
+          <div class="feature">Explicación clara de qué te afecta</div>
+          <div class="feature">Plan de acción paso a paso</div>
+          <div class="feature">Recomendaciones para mejorar tu score</div>
+        </div>
+      </div>
+
+      <div class="why">
+        <h3>Inversión que se traduce en oportunidad</h3>
+        <p>Entender hoy lo que te está frenando puede ahorrarte meses o años de rechazos y decisiones equivocadas.</p>
+        <a class="btn btn-primary" style="width:100%" href="#">Quiero mi diagnóstico →</a>
+      </div>
+    </section>
+
+    <section class="trustbar">
+      <div class="trustitem"><div class="trusticon">🛡</div><div><strong>Pago 100% seguro</strong><span>Tus datos protegidos</span></div></div>
+      <div class="trustitem"><div class="trusticon">⚡</div><div><strong>Entrega inmediata</strong><span>Recibí todo por email</span></div></div>
+      <div class="trustitem"><div class="trusticon">🔒</div><div><strong>Confidencialidad total</strong><span>Tu información está segura</span></div></div>
+    </section>
+
+    <section class="closing">
+      <div>
+        <h2>Seguir igual te cuesta más caro.</h2>
+        <p>Tomar acción hoy puede cambiar tu futuro financiero.</p>
+      </div>
+      <div class="rating">
+        <strong>Miles de personas ya están cambiando su situación.</strong>
+        <div class="stars">★★★★★</div>
+        <strong>4.8/5</strong>
+      </div>
+    </section>
+  </main>
+
+  <div class="sticky">
+    <div class="sticky-inner">
+      <div class="sticky-copy">
+        <strong>Credizona Reset — diagnóstico completo</strong>
+        <span>Reporte Equifax incluido + plan de acción — USD 20</span>
+      </div>
+      <a class="btn btn-primary" href="#precio">Obtener diagnóstico</a>
+    </div>
+  </div>
+</body>
+</html>
