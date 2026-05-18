@@ -1,374 +1,105 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Credizona Reset — Diagnóstico financiero completo</title>
-  <meta name="description" content="Entendé qué está frenando tu perfil crediticio. Reporte Equifax incluido, interpretación clara y plan de acción." />
-  <style>
-    :root{
-      --bg:#050914;
-      --bg2:#071225;
-      --panel:#0b1630;
-      --panel2:#101b38;
-      --text:#f7fbff;
-      --muted:#a9b4cc;
-      --green:#5cff70;
-      --green2:#35d85e;
-      --purple:#261249;
-      --line:rgba(255,255,255,.12);
-      --danger:#ff7538;
-      --red:#e43345;
-      --gold:#ffd447;
-      --shadow:0 30px 80px rgba(0,0,0,.45);
-      --radius:24px;
-      --max:1180px;
-      --grad:linear-gradient(90deg,#5cff70 0%,#35d85e 100%);
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:
-        radial-gradient(circle at 12% 8%, rgba(81,255,105,.15), transparent 25%),
-        radial-gradient(circle at 70% 8%, rgba(85,46,180,.28), transparent 25%),
-        linear-gradient(180deg,#050914 0%,#071225 52%,#050914 100%);
-      color:var(--text);
-      line-height:1.45;
-    }
-    a{text-decoration:none;color:inherit}
-    .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
-    .nav{
-      position:sticky;top:0;z-index:50;
-      background:rgba(5,9,20,.88);backdrop-filter:blur(14px);
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-    .nav-inner{
-      max-width:var(--max);margin:0 auto;padding:18px 22px;
-      display:flex;align-items:center;justify-content:space-between;gap:18px;
-    }
-    .brand{display:flex;align-items:center;gap:12px;font-weight:950;font-size:24px;letter-spacing:-.04em}
-    .brand-icon{
-      width:43px;height:43px;border-radius:14px;background:var(--grad);
-      color:#050914;display:grid;place-items:center;font-weight:1000;font-size:25px;
-      box-shadow:0 0 28px rgba(92,255,112,.22);
-    }
-    .brand span:last-child{color:var(--green)}
-    .nav-links{display:flex;gap:28px;font-size:13px;font-weight:900;text-transform:uppercase}
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;gap:10px;
-      border-radius:12px;padding:16px 24px;font-weight:950;text-transform:uppercase;
-      border:1px solid transparent;cursor:pointer;box-shadow:var(--shadow);
-      letter-spacing:.02em;
-    }
-    .btn-primary{background:var(--grad);color:#041008}
-    .btn-secondary{background:rgba(255,255,255,.05);border-color:var(--line);box-shadow:none}
-    .hero{
-      padding:54px 0 30px;
-      display:grid;grid-template-columns:1.02fr .98fr;gap:34px;align-items:center;
-    }
-    .kicker{
-      display:inline-flex;gap:10px;align-items:center;border:1px solid rgba(92,255,112,.28);
-      color:var(--green);background:rgba(92,255,112,.08);
-      border-radius:999px;padding:10px 14px;font-weight:900;font-size:13px;text-transform:uppercase;
-    }
-    h1{
-      margin:18px 0 18px;
-      font-size:58px;line-height:.96;letter-spacing:-.055em;text-transform:uppercase;
-      max-width:680px;
-    }
-    h1 strong{color:var(--green)}
-    .sub{font-size:20px;color:#d5dbea;max-width:620px;margin:0 0 26px}
-    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin:26px 0 16px}
-    .secure{display:flex;gap:8px;align-items:center;color:#dbe7df;font-size:14px;font-weight:750}
-    .hero-visual{
-      display:grid;grid-template-columns:1fr .68fr;gap:20px;align-items:center;
-    }
-    .phone{
-      border-radius:38px;background:#07111f;border:10px solid #1a2232;
-      box-shadow:0 30px 90px rgba(0,0,0,.55);
-      padding:20px;min-height:430px;position:relative;overflow:hidden;
-    }
-    .phone:before{
-      content:"";position:absolute;top:12px;left:50%;transform:translateX(-50%);
-      width:105px;height:22px;border-radius:999px;background:#141d2e;
-    }
-    .phone-content{padding-top:34px}
-    .score-title{text-align:center;font-size:13px;font-weight:950;text-transform:uppercase;color:#fff}
-    .score-number{text-align:center;color:var(--danger);font-size:58px;font-weight:1000;line-height:1;letter-spacing:-.06em}
-    .risk{text-align:center;color:var(--danger);font-weight:950;text-transform:uppercase;margin-bottom:16px}
-    .gauge{
-      width:210px;height:110px;margin:0 auto 16px;border-radius:210px 210px 0 0;
-      background:conic-gradient(from 270deg,#e33142 0 25%,#ffb132 25% 62%,#43df66 62% 100%);
-      position:relative;overflow:hidden;
-    }
-    .gauge:after{
-      content:"";position:absolute;left:28px;right:28px;bottom:0;height:78px;background:#07111f;
-      border-radius:150px 150px 0 0;
-    }
-    .needle{
-      position:absolute;width:90px;height:4px;background:#fff;bottom:12px;left:50%;
-      transform-origin:left center;transform:rotate(-34deg);z-index:3;border-radius:99px;
-    }
-    .factor{
-      display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px;margin:10px 0;
-      font-size:13px;font-weight:800;
-    }
-    .factor-icon{
-      width:28px;height:28px;border-radius:8px;border:1px solid currentColor;
-      display:grid;place-items:center;color:var(--danger);flex:0 0 auto;
-    }
-    .side-punch{display:grid;gap:18px}
-    .circle{
-      width:168px;height:168px;border-radius:999px;border:4px solid var(--green);
-      display:grid;place-items:center;text-align:center;color:var(--green);font-weight:1000;
-      font-size:23px;line-height:1.05;text-transform:uppercase;box-shadow:0 0 30px rgba(92,255,112,.15);
-      margin:auto;
-    }
-    .side-copy h3{font-size:26px;line-height:1.05;margin:0 0 10px}
-    .side-copy p{color:#d3d9e8;margin:0;font-size:17px}
-    .pain-strip{
-      margin-top:10px;border-radius:26px;background:linear-gradient(180deg,rgba(16,27,60,.96),rgba(10,19,41,.96));
-      border:1px solid var(--line);box-shadow:var(--shadow);padding:22px;
-    }
-    .pain-title{text-align:center;font-weight:950;text-transform:uppercase;font-size:22px;margin-bottom:18px}
-    .pain-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
-    .pain{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center;border-right:1px solid rgba(255,255,255,.14);padding-right:14px}
-    .pain:last-child{border-right:none}
-    .pain-icon{
-      width:58px;height:58px;border-radius:999px;border:2px solid var(--green);
-      color:var(--green);display:grid;place-items:center;font-size:25px;flex:0 0 auto;
-    }
-    .pain strong{display:block;font-size:16px}
-    section{padding:34px 0}
-    .offer-panel{
-      border:2px solid var(--green);border-radius:24px;background:linear-gradient(180deg,rgba(11,22,48,.92),rgba(8,18,38,.96));
-      box-shadow:var(--shadow);padding:28px;display:grid;grid-template-columns:.92fr 1.08fr .5fr;gap:30px;align-items:center;
-    }
-    .equifax-card{
-      background:linear-gradient(180deg,#17243b,#0e182b);border-radius:22px;padding:24px;text-align:center;
-      border:1px solid rgba(255,255,255,.08);
-    }
-    .include-pill{display:inline-block;background:var(--green);color:#041008;font-weight:1000;text-transform:uppercase;border-radius:8px;padding:6px 10px;font-size:12px}
-    .equifax-card h2{font-size:34px;line-height:.95;letter-spacing:-.05em;text-transform:uppercase;margin:18px 0 10px}
-    .eq-logo{color:#e92e43;font-size:38px;font-weight:1000;font-style:italic;letter-spacing:-.06em}
-    .offer-copy h2{font-size:30px;line-height:1.05;margin:0 0 12px}
-    .offer-copy h2 span{color:var(--green)}
-    .checks{display:grid;gap:12px;margin-top:18px}
-    .check{display:flex;gap:10px;align-items:flex-start;font-weight:750}
-    .check:before{content:"✓";width:23px;height:23px;border-radius:999px;background:var(--green);color:#041008;display:grid;place-items:center;font-weight:1000;flex:0 0 auto}
-    .stamp{
-      width:155px;height:155px;border-radius:999px;background:#fff;color:#151515;
-      display:grid;place-items:center;text-align:center;font-size:26px;line-height:1;
-      font-weight:1000;text-transform:uppercase;transform:rotate(-10deg);
-      border:6px solid #ececec;box-shadow:0 15px 30px rgba(0,0,0,.35);
-    }
-    .stamp span{color:#d92035}
-    .steps-title{text-align:center;font-size:22px;font-weight:950;text-transform:uppercase;margin:0 0 24px}
-    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;align-items:start}
-    .step{text-align:center;position:relative}
-    .step:not(:last-child):after{content:"→";position:absolute;right:-20px;top:52px;font-size:36px;color:#fff}
-    .step-icon{
-      width:92px;height:92px;border-radius:999px;margin:0 auto 14px;background:rgba(255,255,255,.06);
-      border:1px solid var(--line);display:grid;place-items:center;color:var(--green);font-size:38px;
-      position:relative;
-    }
-    .step-num{
-      position:absolute;top:-6px;left:-6px;background:var(--green);color:#041008;
-      width:27px;height:27px;border-radius:999px;font-weight:1000;display:grid;place-items:center;font-size:13px;
-    }
-    .step h3{font-size:16px;text-transform:uppercase;margin:0 0 6px}
-    .step p{margin:0;color:var(--muted);font-size:14px}
-    .pricing{
-      border:2px solid var(--green);border-radius:24px;padding:28px;background:linear-gradient(180deg,rgba(11,22,48,.96),rgba(8,18,38,.96));
-      display:grid;grid-template-columns:.9fr 1.1fr .9fr;gap:28px;align-items:center;
-    }
-    .price-box h3{text-transform:uppercase;margin:0 0 10px}
-    .price{font-size:72px;font-weight:1000;letter-spacing:-.08em;line-height:1}
-    .price span{color:var(--green)}
-    .access{margin-top:18px;font-weight:950;text-transform:uppercase;color:#fff}
-    .value h3{text-transform:uppercase;margin:0 0 10px}
-    .small-copy{color:var(--muted);margin:0 0 16px}
-    .features{display:grid;gap:10px}
-    .feature{font-weight:850}
-    .feature:before{content:"✓";color:var(--green);font-size:24px;margin-right:10px}
-    .why h3{text-transform:uppercase;margin:0 0 10px}
-    .why p{color:#dce4f5;margin:0 0 18px}
-    .trustbar{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:28px}
-    .trustitem{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:center}
-    .trusticon{width:56px;height:56px;border-radius:999px;border:2px solid var(--green);color:var(--green);display:grid;place-items:center;font-size:25px}
-    .trustitem strong{display:block;font-size:18px}
-    .trustitem span{color:var(--muted)}
-    .closing{
-      margin:34px 0 70px;border-radius:24px;background:linear-gradient(90deg,rgba(72,25,115,.75),rgba(15,22,50,.9));
-      border:1px solid rgba(255,255,255,.10);padding:28px;display:grid;grid-template-columns:1fr .45fr;gap:24px;align-items:center;
-    }
-    .closing h2{text-transform:uppercase;font-size:34px;line-height:1;margin:0 0 8px}
-    .closing p{margin:0;color:#f0f2ff;font-size:19px}
-    .rating{border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:18px;text-align:center}
-    .stars{color:var(--gold);font-size:25px;letter-spacing:3px}
-    .sticky{
-      position:sticky;bottom:0;z-index:60;background:rgba(5,9,20,.88);backdrop-filter:blur(14px);
-      border-top:1px solid rgba(255,255,255,.08);
-    }
-    .sticky-inner{
-      max-width:var(--max);margin:0 auto;padding:12px 22px;display:flex;gap:14px;align-items:center;justify-content:space-between;
-    }
-    .sticky-copy strong{display:block}.sticky-copy span{color:var(--muted);font-size:14px}
-    @media(max-width:980px){
-      .nav-links{display:none}.hero,.hero-visual,.offer-panel,.pricing,.closing{grid-template-columns:1fr}
-      h1{font-size:42px}.pain-grid,.steps,.trustbar{grid-template-columns:1fr}
-      .pain{border-right:none;border-bottom:1px solid rgba(255,255,255,.14);padding-bottom:14px}.pain:last-child{border-bottom:none}
-      .step:not(:last-child):after{display:none}.sticky-inner{flex-direction:column;align-items:stretch}.sticky-copy{text-align:center}
-      .circle{width:140px;height:140px}.stamp{margin:auto}
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Credizona Reset</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050914;--panel:#0b1630;--surface:#071225;--green:#5cff70;--green2:#35d85e;--text:#f7fbff;--muted:#a9b4cc;--subtle:#7a8aaa;--danger:#ff7538;--warn:#ffd447;--blue:#4B8EF0;--border:rgba(255,255,255,.10);--shadow:0 30px 80px rgba(0,0,0,.45)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100vh;font-family:Inter,system-ui,sans-serif;background:radial-gradient(circle at 12% 8%,rgba(92,255,112,.15),transparent 25%),radial-gradient(circle at 70% 8%,rgba(85,46,180,.28),transparent 25%),linear-gradient(180deg,#050914 0%,#071225 52%,#050914 100%);color:var(--text)}
+button,input{font-family:inherit}button{cursor:pointer}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}@keyframes pulse{0%,100%{opacity:1}50%{opacity:.45}}
+.fade{animation:fadeUp .28s ease both}
+.header{position:sticky;top:0;z-index:50;background:rgba(5,9,20,.92);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.07)}
+.header-inner{max-width:980px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900}.brand span{color:var(--green)}
+.brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--green),var(--blue));color:#041008;display:grid;place-items:center;font-weight:900}
+.header-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.main{max-width:760px;margin:0 auto;padding:28px 18px 120px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px}
+.card-strong{background:linear-gradient(180deg,rgba(11,22,48,.96),rgba(8,18,40,.98));border:1px solid rgba(255,255,255,.08);border-radius:18px;box-shadow:var(--shadow)}
+.kicker{display:inline-flex;align-items:center;gap:9px;border:1px solid rgba(92,255,112,.28);color:var(--green);background:rgba(92,255,112,.08);border-radius:999px;padding:8px 14px;font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.hero{padding:34px 26px 28px;position:relative;overflow:hidden;border:2px solid rgba(92,255,112,.32)}
+.hero:before{content:"";position:absolute;top:-80px;left:-80px;width:260px;height:260px;border-radius:50%;background:rgba(92,255,112,.08)}
+.hero:after{content:"";position:absolute;top:-50px;right:-40px;width:210px;height:210px;border-radius:50%;background:rgba(75,142,240,.12)}
+.hero>*{position:relative;z-index:1}
+h1{margin:18px 0 14px;font-size:clamp(28px,5vw,44px);line-height:.98;letter-spacing:-.06em;text-transform:uppercase;font-weight:900}
+h1 span{color:var(--green)}
+.lead{font-size:16px;line-height:1.65;color:#d5dbea;max-width:600px;margin-bottom:20px}
+.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.badge{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:12px;font-size:12px;font-weight:900;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);color:#dbe5f5}
+.badge.green{color:var(--green);background:rgba(92,255,112,.10);border-color:rgba(92,255,112,.32)}
+.pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.pain{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.075);border-radius:12px;padding:12px 14px}
+.pain div{font-size:12px;color:var(--muted);font-weight:700;line-height:1.4}
+.pre-card{padding:20px;margin-top:18px}.pre-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pre-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px}
+.lbl{font-size:10px;color:var(--subtle);text-transform:uppercase;letter-spacing:.06em;font-weight:800;margin-bottom:5px}
+.val{font-size:14px;color:#dbe5f5;font-weight:700}
+.score-panel{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.score-box{padding:18px;text-align:center}.score-big{font-size:54px;line-height:1;font-weight:900;font-family:Georgia,serif}
+.status{display:inline-block;margin-top:8px;border-radius:999px;padding:5px 14px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.status.green{color:var(--green);border:1px solid rgba(92,255,112,.35);background:rgba(92,255,112,.10)}
+.status.yellow{color:var(--warn);border:1px solid rgba(255,212,71,.35);background:rgba(255,212,71,.10)}
+.status.red{color:var(--danger);border:1px solid rgba(255,117,56,.35);background:rgba(255,117,56,.10)}
+.precision{height:8px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;margin-top:10px}.precision div{height:100%;border-radius:999px;background:var(--green)}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:22px 0;padding-bottom:4px}
+.tab{flex-shrink:0;background:transparent;color:var(--muted);border:1.5px solid var(--border);padding:9px 13px;border-radius:9px;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.02em}
+.tab.active{border-color:var(--green);background:rgba(92,255,112,.08);color:var(--green)}
+.section-title{font-size:20px;font-weight:900;letter-spacing:-.03em;margin-bottom:8px}.text{font-size:13px;color:var(--muted);line-height:1.68}
+.info{padding:15px 16px;border-radius:13px;margin-top:12px;border:1px solid var(--border);background:rgba(255,255,255,.04)}
+.info.good{border-color:rgba(92,255,112,.25);background:rgba(92,255,112,.07)}.info.warn{border-color:rgba(255,212,71,.25);background:rgba(255,212,71,.07)}
+.plan-hero{padding:20px;border:2px solid rgba(92,255,112,.36);background:linear-gradient(180deg,rgba(11,22,48,.96),rgba(8,18,40,.98))}
+.plan-top{display:flex;align-items:center;gap:12px;margin-bottom:14px}.plan-icon{font-size:30px}.plan-name{font-size:20px;font-weight:900}.plan-label{font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.08em;font-weight:900}
+.step{display:flex;gap:12px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-left:3px solid var(--green);margin-top:10px}
+.step-num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;background:rgba(92,255,112,.12);border:1.5px solid rgba(92,255,112,.4);color:var(--green);font-weight:900;font-size:12px}
+.step b{font-size:14px}.step p{font-size:12px;color:var(--muted);line-height:1.55;margin-top:4px}
+.debt-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:15px;border:1px solid var(--border);border-radius:13px;margin-bottom:10px;background:rgba(255,255,255,.035)}
+.debt-name{font-size:15px;font-weight:900}.debt-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.money{position:relative}.money span{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--green);font-weight:900}
+.money input{width:140px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:10px;padding:10px 10px 10px 26px;outline:none}
+.btn{border:0;border-radius:12px;padding:12px 18px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.02em}
+.btn-primary{background:linear-gradient(90deg,var(--green),var(--green2));color:#041008;box-shadow:0 8px 26px rgba(92,255,112,.26)}
+.btn-soft{background:rgba(92,255,112,.10);border:1px solid rgba(92,255,112,.3);color:var(--green)}
+.btn-warn{background:linear-gradient(90deg,var(--warn),#f59e0b);color:#1a1000}
+.range{width:100%;accent-color:var(--green);margin-top:10px}
+.offer{border:2px dashed rgba(255,212,71,.35);background:rgba(255,212,71,.06);padding:20px;border-radius:16px}.offer-price{font-size:34px;color:var(--warn);font-weight:900;font-family:Georgia,serif}
+.sticky{position:fixed;bottom:0;left:0;right:0;z-index:60;background:rgba(5,9,20,.94);backdrop-filter:blur(14px);border-top:1px solid rgba(255,255,255,.08);padding:12px 18px}
+.sticky-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}.sticky small{display:block;color:var(--muted);font-size:11px}.sticky b{font-size:13px}
+.input-card{padding:18px;margin-top:16px}.form-row{margin-bottom:14px}.inp{width:100%;background:var(--surface);border:1.5px solid var(--border);color:var(--text);border-radius:10px;padding:11px 13px;outline:none}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:620px){.main{padding-left:14px;padding-right:14px}.pain-grid,.pre-grid,.score-panel,.form-grid{grid-template-columns:1fr}.debt-row{grid-template-columns:1fr}.money input{width:100%}.sticky-inner{align-items:flex-start}}
+</style>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <a class="brand" href="#"><div class="brand-icon">↻</div><div>CREDIZONA <span>RESET</span></div></a>
-      <div class="nav-links">
-        <a href="#funciona">¿Cómo funciona?</a>
-        <a href="#incluye">¿Qué incluye?</a>
-        <a href="#precio">Beneficios</a>
-        <a href="#precio">Precio</a>
-      </div>
-      <a class="btn btn-primary" href="#precio">Obtener mi diagnóstico</a>
-    </div>
-  </nav>
-
-  <main class="wrap">
-    <section class="hero">
-      <div>
-        <div class="kicker">Diagnóstico completo post-rechazo</div>
-        <h1>Entendé qué te está frenando. Corregí lo que importa. <strong>Volvé a calificar.</strong></h1>
-        <p class="sub">El diagnóstico completo que te muestra qué está afectando tu perfil crediticio y cómo salir de deudas de manera definitiva.</p>
-        <div class="hero-actions">
-          <a class="btn btn-primary" href="#precio">Quiero mi diagnóstico completo →</a>
-          <a class="btn btn-secondary" href="#incluye">Ver qué incluye</a>
-        </div>
-        <div class="secure">🔒 Pago 100% seguro. Tus datos están protegidos.</div>
-      </div>
-
-      <div class="hero-visual">
-        <div class="phone">
-          <div class="phone-content">
-            <div class="score-title">Tu score actual</div>
-            <div class="score-number">579</div>
-            <div class="risk">Riesgo alto</div>
-            <div class="gauge"><div class="needle"></div></div>
-            <div class="factor"><div class="factor-icon">!</div><div>Deuda en mora<br><small>Impacto alto</small></div></div>
-            <div class="factor"><div class="factor-icon">↯</div><div>Uso alto de crédito<br><small>Impacto medio</small></div></div>
-            <div class="factor"><div class="factor-icon">?</div><div>Consultas recientes<br><small>Impacto bajo</small></div></div>
-          </div>
-        </div>
-        <div class="side-punch">
-          <div class="circle">Tu cambio<br>empieza<br>hoy</div>
-          <div class="side-copy">
-            <h3>No es suerte.<br>Es información.</h3>
-            <p>La mayoría de los rechazos tienen una causa concreta. Nosotros te la mostramos y te decimos qué hacer.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="pain-strip">
-      <div class="pain-title">¿Te sentís identificado?</div>
-      <div class="pain-grid">
-        <div class="pain"><div class="pain-icon">☹</div><strong>Pagás, pero nunca alcanzás a salir.</strong></div>
-        <div class="pain"><div class="pain-icon">×</div><strong>Te rechazan créditos y no sabés por qué.</strong></div>
-        <div class="pain"><div class="pain-icon">⌕</div><strong>No entendés tu reporte y qué significa cada cosa.</strong></div>
-        <div class="pain"><div class="pain-icon">▣</div><strong>Probaste de todo y nada cambia.</strong></div>
-      </div>
-    </section>
-
-    <section id="incluye">
-      <div class="offer-panel">
-        <div class="equifax-card">
-          <div class="include-pill">Incluye</div>
-          <h2>Tu reporte<br>Equifax</h2>
-          <div style="border:1px solid var(--green);color:var(--green);border-radius:999px;padding:7px 10px;font-weight:900;text-transform:uppercase;margin:12px 0">Incluido en tu diagnóstico</div>
-          <div class="eq-logo">EQUIFAX</div>
-        </div>
-
-        <div class="offer-copy">
-          <h2>No solo te damos el reporte.<br><span>Te lo explicamos y te damos un plan de acción.</span></h2>
-          <div class="checks">
-            <div class="check">Acceso a tu reporte crediticio Equifax — valor público aprox. $490</div>
-            <div class="check">Análisis claro de qué te está afectando</div>
-            <div class="check">Plan personalizado para mejorar tu perfil</div>
-            <div class="check">Estrategia para salir de deudas y volver a calificar</div>
-          </div>
-        </div>
-
-        <div class="stamp">Reporte<br><span>Equifax</span><br>incluido</div>
-      </div>
-    </section>
-
-    <section id="funciona">
-      <div class="steps-title">Así funciona</div>
-      <div class="steps">
-        <div class="step"><div class="step-icon"><div class="step-num">1</div>💳</div><h3>Comprás tu diagnóstico</h3><p>Pago 100% seguro en menos de 1 minuto.</p></div>
-        <div class="step"><div class="step-icon"><div class="step-num">2</div>📄</div><h3>Autorizás tu reporte</h3><p>Con tu consentimiento consultamos Equifax.</p></div>
-        <div class="step"><div class="step-icon"><div class="step-num">3</div>📈</div><h3>Analizamos todo</h3><p>Revisamos tu reporte y tus deudas a fondo.</p></div>
-        <div class="step"><div class="step-icon"><div class="step-num">4</div>✅</div><h3>Recibís tu plan completo</h3><p>Diagnóstico con pasos claros y accionables.</p></div>
-      </div>
-    </section>
-
-    <section id="precio" class="pricing">
-      <div class="price-box">
-        <h3>Diagnóstico completo</h3>
-        <div class="price">USD <span>20</span></div>
-        <div class="access">⚡ Acceso inmediato</div>
-      </div>
-
-      <div>
-        <div class="features">
-          <div class="feature">Análisis de tus deudas</div>
-          <div class="feature">Reporte Equifax incluido — valor público aprox. $490</div>
-          <div class="feature">Explicación clara de qué te afecta</div>
-          <div class="feature">Plan de acción paso a paso</div>
-          <div class="feature">Recomendaciones para mejorar tu score</div>
-        </div>
-      </div>
-
-      <div class="why">
-        <h3>Inversión que se traduce en oportunidad</h3>
-        <p>Entender hoy lo que te está frenando puede ahorrarte meses o años de rechazos y decisiones equivocadas.</p>
-        <a class="btn btn-primary" style="width:100%" href="#">Quiero mi diagnóstico →</a>
-      </div>
-    </section>
-
-    <section class="trustbar">
-      <div class="trustitem"><div class="trusticon">🛡</div><div><strong>Pago 100% seguro</strong><span>Tus datos protegidos</span></div></div>
-      <div class="trustitem"><div class="trusticon">⚡</div><div><strong>Entrega inmediata</strong><span>Recibí todo por email</span></div></div>
-      <div class="trustitem"><div class="trusticon">🔒</div><div><strong>Confidencialidad total</strong><span>Tu información está segura</span></div></div>
-    </section>
-
-    <section class="closing">
-      <div>
-        <h2>Seguir igual te cuesta más caro.</h2>
-        <p>Tomar acción hoy puede cambiar tu futuro financiero.</p>
-      </div>
-      <div class="rating">
-        <strong>Miles de personas ya están cambiando su situación.</strong>
-        <div class="stars">★★★★★</div>
-        <strong>4.8/5</strong>
-      </div>
-    </section>
-  </main>
-
-  <div class="sticky">
-    <div class="sticky-inner">
-      <div class="sticky-copy">
-        <strong>Credizona Reset — diagnóstico completo</strong>
-        <span>Reporte Equifax incluido + plan de acción — USD 20</span>
-      </div>
-      <a class="btn btn-primary" href="#precio">Obtener diagnóstico</a>
-    </div>
-  </div>
+<header class="header"><div class="header-inner"><div class="brand"><div class="brand-mark">R</div><div>Credizona <span>Reset</span></div></div><div class="header-label">Diagnóstico inicial gratis</div></div></header>
+<main class="main"><div id="app"></div></main>
+<div class="sticky"><div class="sticky-inner"><div><small id="sticky-small">Siguiente paso</small><b id="sticky-text">Ver qué me está frenando</b></div><button class="btn btn-primary" id="sticky-btn">Empezar</button></div></div>
+<script>
+const params=new URLSearchParams(location.search);const hasSurvey=params.get("encuesta")==="si";
+const PRE={nombre:params.get("nombre")||"Martín Rodríguez",cedula:params.get("cedula")||"3.456.789-0",email:params.get("email")||"martin@email.com",telefono:params.get("telefono")||"",ingreso:Number(params.get("ingreso")||65000),laboral:params.get("laboral")||"Relación de dependencia",monto:Number(params.get("monto")||70000),rechazo:params.get("motivo_rechazo")||"Score insuficiente",encuestaScore:hasSurvey?72:null};
+let step="intro",activeTab="plan",precision=hasSurvey?70:40,extra=3000;
+let gastos={alquiler:18000,servicios:6500,alimentacion:19000,transporte:5500,salud:3000,otros:4000};
+let deudas=hasSurvey?[{id:1,nombre:"Tarjeta Santander",tipo:"Tarjeta",saldo:42000,inicial:42000,minimo:5000,tasa:8.1,estado:"mora"},{id:2,nombre:"Préstamo personal",tipo:"Préstamo",saldo:120000,inicial:120000,minimo:10500,tasa:4.2,estado:"atraso"},{id:3,nombre:"Tarjeta OCA",tipo:"Tarjeta",saldo:78000,inicial:78000,minimo:8500,tasa:7.5,estado:"al_dia"}]:[{id:1,nombre:"Deuda estimada",tipo:"Estimación",saldo:PRE.monto||70000,inicial:PRE.monto||70000,minimo:Math.round((PRE.monto||70000)*.08),tasa:0,estado:"estimada"}];
+function fmt(n){return "$"+Number(n||0).toLocaleString("es-UY",{maximumFractionDigits:0})}
+function calc(){const gastoTotal=Object.values(gastos).reduce((a,b)=>a+Number(b||0),0);const deudaTotal=deudas.reduce((a,d)=>a+Number(d.saldo||0),0);const deudaInicial=deudas.reduce((a,d)=>a+Number(d.inicial||0),0);const minimos=deudas.reduce((a,d)=>a+(Number(d.saldo)>0?Number(d.minimo||0):0),0);const flujo=PRE.ingreso-gastoTotal-minimos;const ratio=PRE.ingreso?minimos/PRE.ingreso:0;const mora=deudas.filter(d=>d.estado==="mora"&&Number(d.saldo)>0);const atraso=deudas.filter(d=>d.estado==="atraso"&&Number(d.saldo)>0);let indice=hasSurvey?PRE.encuestaScore:38;if(flujo<0)indice+=15;if(ratio>.35)indice+=10;if(mora.length)indice+=15;indice=Math.min(100,indice);let nivel=indice>=75?"Crítico":indice>=50?"En riesgo":indice>=25?"Preliminar":"Controlable";let color=indice>=75?"red":indice>=50?"yellow":"green";let hex=indice>=75?"#ff7538":indice>=50?"#ffd447":"#5cff70";let prioridad=mora[0]||atraso[0]||deudas.filter(d=>Number(d.saldo)>0).sort((a,b)=>(b.tasa||0)-(a.tasa||0))[0];let planId=1,planName="Orden Financiero",planIcon="🗂️";let problema=hasSurvey?"Ya usamos tu encuesta para detectar señales de sobrecarga financiera.":"Con tu solicitud ya podemos darte una primera lectura, pero falta información para afinar el plan.";if(flujo<0){planId=4;planName="Estabilización";planIcon="🚨";problema="Tu mes no cierra: después de gastos y cuotas, quedás en negativo."}else if(mora.length||ratio>.35){planId=2;planName="Reducción de Deuda";planIcon="📉";problema="Demasiado ingreso se va en deudas. Antes de pedir otro préstamo hay que frenar el daño."}else if(indice>=65){planId=3;planName="Recuperación Rápida";planIcon="🚀";problema="Tu situación puede mejorar rápido si corregís algunos puntos concretos."}const progreso=deudaInicial?Math.round(((deudaInicial-deudaTotal)/deudaInicial)*100):0;return{gastoTotal,deudaTotal,deudaInicial,minimos,flujo,ratio,mora,atraso,indice,nivel,color,hex,prioridad,planId,planName,planIcon,problema,progreso}}
+function showIntro(){const d=calc();document.getElementById("app").innerHTML=`<div class="fade"><section class="card-strong hero"><div class="kicker"><span class="dot"></span> Diagnóstico inicial gratis</div><h1>Te rechazaron el préstamo.<br><span>Ahora entendé qué hacer.</span></h1><p class="lead">Antes de pedir otro préstamo, frená el daño. Usamos los datos de tu solicitud ${hasSurvey?"y tus respuestas de la encuesta":""} para darte una primera lectura clara.</p><div class="badges"><div class="badge green">✓ Índice Reset preliminar</div><div class="badge">✓ Plan asignado</div><div class="badge">✓ Primera acción concreta</div></div><div class="pain-grid"><div class="pain"><span>😞</span><div>Pagás, pero sentís que no salís nunca</div></div><div class="pain"><span>✕</span><div>Te rechazan y nadie te explica bien por qué</div></div><div class="pain"><span>🔍</span><div>No sabés qué ve el banco sobre vos</div></div><div class="pain"><span>📋</span><div>No tenés un plan claro para ordenar deudas</div></div></div></section><section class="card pre-card"><div class="lbl">Datos que ya tenemos</div><div class="pre-grid">${preItem("Nombre",PRE.nombre)}${preItem("Cédula",PRE.cedula)}${preItem("Ingreso declarado",fmt(PRE.ingreso))}${preItem("Monto solicitado",fmt(PRE.monto))}${preItem("Situación laboral",PRE.laboral)}${preItem("Motivo rechazo",PRE.rechazo)}</div></section><section class="score-panel"><div class="card score-box"><div class="lbl">Índice Reset</div><div class="score-big" style="color:${d.hex}">${d.indice}</div><div class="status ${d.color}">${d.nivel}</div><p class="text" style="margin-top:10px">No es un score crediticio oficial.</p></div><div class="card score-box"><div class="lbl">Precisión actual</div><div class="score-big" style="color:var(--green)">${precision}%</div><div class="precision"><div style="width:${precision}%"></div></div><p class="text" style="margin-top:12px">${hasSurvey?"La encuesta ya mejoró este diagnóstico.":"Respondé 3 datos rápidos para mejorar precisión."}</p></div></section><section class="card info ${hasSurvey?"good":"warn"}"><b>${hasSurvey?"Ya analizamos tu encuesta.":"Diagnóstico preliminar incompleto."}</b><p class="text" style="margin-top:6px">${hasSurvey?"Podemos mostrarte un plan inicial con mayor precisión.":"Podemos ayudarte igual, pero para un plan serio hay que confirmar gastos y deudas."}</p></section></div>`;setSticky("Siguiente paso","Ver qué me está frenando",()=>{step="plan";render()})}
+function preItem(l,v){return `<div class="pre-item"><div class="lbl">${l}</div><div class="val">${v}</div></div>`}
+function showPlan(){document.getElementById("app").innerHTML=`<div class="fade"><div class="tabs">${tab("plan","Mi plan")}${tab("deudas","Mis deudas")}${tab("asistente","Asistente")}${tab("informe","Informe crediticio")}${tab("detalles","Detalles")}</div><div id="tabContent"></div></div>`;renderTab();setSticky("Siguiente paso",activeTab==="informe"?"Comprar Reset Plus":"Mejorar precisión",()=>{if(activeTab==="informe")alert("Acá conectás MercadoPago / pago real.");else{activeTab="detalles";render()}})}
+function tab(id,label){return `<button class="tab ${activeTab===id?"active":""}" onclick="activeTab='${id}';render()">${label}</button>`}
+function renderTab(){const d=calc();const el=document.getElementById("tabContent");if(!el)return;if(activeTab==="plan")el.innerHTML=renderPlan(d);if(activeTab==="deudas")el.innerHTML=renderDeudas(d);if(activeTab==="asistente")el.innerHTML=renderAsistente(d);if(activeTab==="informe")el.innerHTML=renderInforme(d);if(activeTab==="detalles")el.innerHTML=renderDetalles(d)}
+function renderPlan(d){const steps=[d.flujo<0?"Cerrar el agujero mensual: bajar gastos o renegociar cuotas antes de pagar extra.":"Mantener todos los mínimos al día durante 30 días.",`Atacar primero: ${d.prioridad?.nombre||"la deuda foco"}.`,"No usar tarjetas ni sacar nuevas cuotas durante 30 días.","No repartir pagos extra entre todas las deudas.","Registrar gastos semanalmente para no volver al mismo patrón."];return `<div class="fade"><section class="card plan-hero"><div class="plan-top"><div class="plan-icon">${d.planIcon}</div><div><div class="plan-label">Plan Reset #${d.planId}</div><div class="plan-name">${d.planName}</div></div><div style="margin-left:auto;text-align:right"><div class="lbl">Índice</div><div style="font-size:30px;font-weight:900;color:${d.hex};font-family:Georgia,serif">${d.indice}</div></div></div><div class="info"><div class="lbl">Qué detectamos</div><p class="text">${d.problema}</p></div><div class="info good"><div class="lbl">Primera acción</div><p class="text"><b style="color:var(--green)">${steps[0]}</b></p></div></section><section style="margin-top:14px"><div class="lbl">Plan de 30 días</div>${steps.map((s,i)=>`<div class="step"><div class="step-num">${i+1}</div><div><b>${s}</b>${i===1?`<p>Esta deuda ordena el resto del sistema. No ataques todo junto.</p>`:""}</div></div>`).join("")}</section><section class="card info warn" style="margin-top:14px"><b>Qué NO hacer este mes</b><p class="text" style="margin-top:6px">No pidas otro préstamo para tapar el problema sin entender primero qué está generando el rechazo.</p></section></div>`}
+function renderDeudas(d){return `<div class="fade"><p class="text" style="margin-bottom:14px">Actualizá saldos. El diagnóstico se recalcula solo.</p><div class="score-panel"><div class="card score-box"><div class="lbl">Deuda total</div><div class="score-big" style="font-size:32px;color:var(--danger)">${fmt(d.deudaTotal)}</div></div><div class="card score-box"><div class="lbl">Flujo estimado</div><div class="score-big" style="font-size:32px;color:${d.flujo<0?"var(--danger)":"var(--green)"}">${fmt(d.flujo)}</div></div></div><div style="margin-top:14px">${deudas.map(x=>`<div class="debt-row"><div><div class="debt-name">${x.nombre}</div><div class="debt-meta">Mínimo: ${fmt(x.minimo)} · Estado: ${x.estado} · Tasa: ${x.tasa}%</div></div>${Number(x.saldo)>0?`<div style="display:flex;gap:8px;align-items:center"><div class="money"><span>$</span><input type="number" value="${x.saldo}" onchange="updateSaldo(${x.id},this.value)"></div><button class="btn btn-soft" onclick="cancelar(${x.id})">Cancelar</button></div>`:`<div class="status green">Cancelada</div>`}</div>`).join("")}</div></div>`}
+function renderAsistente(d){const meses=d.prioridad?Math.ceil(Number(d.prioridad.saldo||0)/Math.max(1,Number(d.prioridad.minimo||0)+extra)):0;return `<div class="fade"><section class="card info good"><b>Lectura humana</b><p class="text" style="margin-top:8px">Tu situación no se arregla agregando otra deuda. Primero hay que frenar el daño, ordenar prioridades y recuperar flujo.</p></section><section class="card info"><b>Si pagás extra</b><p class="text" style="margin-top:8px">Si podés pagar <b style="color:var(--green)">${fmt(extra)}</b> extra por mes, liquidarías <b>${d.prioridad?.nombre||"tu deuda foco"}</b> en aproximadamente <b>${meses} meses</b>.</p><input class="range" type="range" min="0" max="30000" step="1000" value="${extra}" oninput="extra=Number(this.value);render()"></section><section class="card info warn"><b>IA real</b><p class="text" style="margin-top:8px">En producción, esta sección debe llamar a un backend. Nunca pongas API keys en el frontend.</p></section></div>`}
+function renderInforme(d){return `<div class="fade"><section class="offer"><div class="lbl" style="color:var(--warn)">Reset Plus</div><h2 style="font-size:28px;line-height:1.1;margin:8px 0 10px">¿Querés saber exactamente qué ve el banco sobre vos?</h2><p class="text">Pedí tu informe crediticio, interpretación simple y un plan de 30 días para corregir lo que más te está frenando.</p><div style="display:flex;justify-content:space-between;align-items:end;gap:14px;margin:18px 0"><div><div class="offer-price">UYU 990</div><div class="text">Pago único · Sin suscripción</div></div><button class="btn btn-warn" onclick="alert('Acá conectás MercadoPago.')">Comprar Reset Plus</button></div><div class="info">${["Informe Clearing / bureau equivalente","Interpretación simple del informe","Deuda foco y prioridad","Plan de 30 días","Seguimiento por WhatsApp"].map(x=>`<p class="text">✓ ${x}</p>`).join("")}</div></section></div>`}
+function renderDetalles(d){return `<div class="fade"><section class="card input-card"><div class="section-title">Mejorar precisión</div><p class="text">Confirmá gastos y deudas para subir el diagnóstico hacia 95%.</p><div class="form-grid" style="margin-top:14px">${Object.keys(gastos).map(k=>`<div class="form-row"><div class="lbl">${k}</div><input class="inp" type="number" value="${gastos[k]}" onchange="gastos['${k}']=Number(this.value||0);precision=95;render()"></div>`).join("")}</div></section><section class="card info" style="margin-top:14px"><div class="section-title">Datos técnicos</div><p class="text">Ratio deuda/ingreso: ${Math.round(d.ratio*100)}%</p><p class="text">Pagos mínimos: ${fmt(d.minimos)}</p><p class="text">Gastos totales: ${fmt(d.gastoTotal)}</p><p class="text">Deuda inicial: ${fmt(d.deudaInicial)}</p><p class="text">Deuda actual: ${fmt(d.deudaTotal)}</p></section></div>`}
+function updateSaldo(id,val){deudas=deudas.map(x=>x.id===id?{...x,saldo:Number(val||0)}:x);render()}
+function cancelar(id){deudas=deudas.map(x=>x.id===id?{...x,saldo:0,estado:"al_dia"}:x);render()}
+function setSticky(small,text,fn){document.getElementById("sticky-small").textContent=small;document.getElementById("sticky-text").textContent=text;document.getElementById("sticky-btn").onclick=fn}
+function render(){if(step==="intro")showIntro();else showPlan()}
+render();
+</script>
 </body>
 </html>
