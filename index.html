@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 <title>Credizona Reset</title>
 
@@ -18,34 +18,34 @@ box-sizing:border-box;
 
 body{
 font-family:'Inter',sans-serif;
-background:#F5F7FB;
+background:#F4F7FB;
 color:#111827;
 }
 
 .container{
-max-width:980px;
+max-width:940px;
 margin:auto;
 padding:24px;
 }
 
 .hero{
-background:linear-gradient(135deg,#ffffff 0%,#F3F8FF 100%);
+background:white;
 border:1px solid #E5E7EB;
-border-radius:28px;
-padding:42px;
-box-shadow:0 10px 40px rgba(0,0,0,0.05);
+border-radius:30px;
+padding:50px;
 position:relative;
 overflow:hidden;
+box-shadow:0 12px 40px rgba(0,0,0,0.05);
 }
 
 .hero:before{
 content:'';
 position:absolute;
-width:300px;
-height:300px;
-background:radial-gradient(circle,#2563EB20 0%,transparent 70%);
-top:-120px;
-right:-120px;
+width:380px;
+height:380px;
+background:radial-gradient(circle,#2563EB15 0%,transparent 70%);
+right:-180px;
+top:-180px;
 }
 
 .badge{
@@ -59,65 +59,43 @@ border-radius:999px;
 font-size:12px;
 font-weight:700;
 color:#2563EB;
-margin-bottom:24px;
+margin-bottom:26px;
 }
 
 h1{
-font-size:54px;
+font-size:58px;
 line-height:1;
 font-family:'DM Serif Display',serif;
-margin-bottom:18px;
-max-width:700px;
-}
-
-.hero p{
-font-size:19px;
-line-height:1.7;
-color:#4B5563;
-max-width:700px;
+margin-bottom:20px;
+max-width:720px;
 }
 
 .highlight{
 color:#2563EB;
 }
 
-.card{
-background:white;
-border:1px solid #E5E7EB;
-border-radius:24px;
-padding:32px;
-margin-top:28px;
-box-shadow:0 6px 30px rgba(0,0,0,0.04);
-}
-
-.section-title{
-font-size:32px;
-font-family:'DM Serif Display',serif;
-margin-bottom:12px;
-}
-
-.section-sub{
-font-size:16px;
-line-height:1.7;
-color:#6B7280;
-margin-bottom:28px;
+.hero p{
+font-size:19px;
+line-height:1.8;
+color:#4B5563;
+max-width:720px;
 }
 
 .diagnosis-box{
+margin-top:32px;
+padding:30px;
+border-radius:24px;
 background:linear-gradient(135deg,#EFF6FF 0%,#ffffff 100%);
 border:1px solid #BFDBFE;
-padding:26px;
-border-radius:22px;
-margin-top:20px;
 }
 
-.diagnosis-title{
-font-size:13px;
+.diagnosis-label{
+font-size:12px;
 font-weight:800;
-letter-spacing:0.12em;
+letter-spacing:0.1em;
+text-transform:uppercase;
 color:#2563EB;
 margin-bottom:14px;
-text-transform:uppercase;
 }
 
 .diagnosis-text{
@@ -126,21 +104,21 @@ line-height:1.8;
 color:#1F2937;
 }
 
-.cta{
-margin-top:30px;
+.hero-buttons{
 display:flex;
 gap:16px;
+margin-top:34px;
 flex-wrap:wrap;
 }
 
 .btn{
-border:none;
-cursor:pointer;
-transition:0.2s;
 padding:18px 28px;
 border-radius:16px;
 font-size:16px;
 font-weight:700;
+border:none;
+cursor:pointer;
+transition:0.2s;
 }
 
 .btn-primary{
@@ -164,6 +142,52 @@ color:#374151;
 background:#F9FAFB;
 }
 
+.card{
+margin-top:28px;
+background:white;
+border-radius:28px;
+padding:36px;
+border:1px solid #E5E7EB;
+box-shadow:0 8px 30px rgba(0,0,0,0.04);
+}
+
+.section-title{
+font-size:36px;
+font-family:'DM Serif Display',serif;
+margin-bottom:10px;
+}
+
+.section-sub{
+font-size:16px;
+line-height:1.8;
+color:#6B7280;
+margin-bottom:28px;
+}
+
+.accordion{
+border:1px solid #E5E7EB;
+border-radius:20px;
+overflow:hidden;
+margin-bottom:24px;
+}
+
+.accordion-header{
+padding:22px;
+background:#F9FAFB;
+cursor:pointer;
+display:flex;
+justify-content:space-between;
+align-items:center;
+font-weight:700;
+font-size:16px;
+}
+
+.accordion-body{
+padding:24px;
+display:none;
+background:white;
+}
+
 .grid{
 display:grid;
 grid-template-columns:1fr 1fr;
@@ -171,7 +195,7 @@ gap:18px;
 }
 
 .field{
-margin-bottom:20px;
+margin-bottom:18px;
 }
 
 .label{
@@ -203,8 +227,8 @@ box-shadow:0 0 0 4px #DBEAFE;
 
 .debt-card{
 border:1px solid #E5E7EB;
-border-radius:20px;
-padding:24px;
+border-radius:22px;
+padding:26px;
 margin-bottom:18px;
 background:#FAFBFF;
 }
@@ -235,57 +259,78 @@ color:#9CA3AF;
 color:#EF4444;
 }
 
-.summary{
+.insight-box{
 margin-top:28px;
-padding:28px;
 background:#111827;
 border-radius:24px;
+padding:30px;
 color:white;
 }
 
-.summary-grid{
+.insight-title{
+font-size:14px;
+font-weight:800;
+letter-spacing:0.08em;
+text-transform:uppercase;
+margin-bottom:18px;
+color:#93C5FD;
+}
+
+.insight{
+padding:18px;
+border-radius:18px;
+background:#1F2937;
+margin-bottom:14px;
+font-size:15px;
+line-height:1.7;
+}
+
+.summary{
+margin-top:28px;
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:18px;
-margin-top:24px;
+gap:16px;
 }
 
 .metric{
-background:#1F2937;
-border-radius:18px;
-padding:22px;
+background:white;
+border:1px solid #E5E7EB;
+border-radius:22px;
+padding:24px;
 }
 
 .metric-label{
-font-size:12px;
-text-transform:uppercase;
+font-size:11px;
+font-weight:700;
 letter-spacing:0.08em;
-color:#9CA3AF;
+text-transform:uppercase;
+color:#6B7280;
 margin-bottom:10px;
 }
 
 .metric-value{
-font-size:32px;
+font-size:34px;
 font-weight:800;
+font-family:'DM Serif Display',serif;
 }
 
 .metric-sub{
 font-size:13px;
-color:#9CA3AF;
-margin-top:8px;
-line-height:1.5;
+line-height:1.6;
+color:#6B7280;
+margin-top:10px;
 }
 
 .priority{
-margin-top:28px;
+margin-top:30px;
+padding:32px;
 background:#FEF2F2;
 border:1px solid #FECACA;
-padding:24px;
-border-radius:20px;
+border-radius:24px;
 }
 
-.priority-title{
-font-size:13px;
+.priority-label{
+font-size:12px;
 font-weight:800;
 letter-spacing:0.08em;
 text-transform:uppercase;
@@ -294,75 +339,89 @@ margin-bottom:10px;
 }
 
 .priority h3{
-font-size:28px;
-margin-bottom:10px;
+font-size:34px;
+margin-bottom:12px;
 }
 
 .priority p{
-font-size:16px;
-line-height:1.7;
+font-size:17px;
+line-height:1.8;
 color:#7F1D1D;
 }
 
-.premium{
-margin-top:36px;
-background:linear-gradient(135deg,#111827 0%,#1F2937 100%);
-border-radius:28px;
-padding:42px;
-color:white;
-position:relative;
-overflow:hidden;
-}
-
-.premium:before{
-content:'';
-position:absolute;
-right:-80px;
-top:-80px;
-width:240px;
-height:240px;
-background:radial-gradient(circle,#2563EB55 0%,transparent 70%);
-}
-
-.premium h2{
-font-size:40px;
-font-family:'DM Serif Display',serif;
-margin-bottom:14px;
-}
-
-.premium p{
-font-size:17px;
-line-height:1.8;
-color:#D1D5DB;
-max-width:700px;
-}
-
-.premium-list{
+.final-diagnosis{
 margin-top:28px;
+padding:36px;
+border-radius:28px;
+background:linear-gradient(135deg,#EFF6FF 0%,#ffffff 100%);
+border:1px solid #BFDBFE;
+}
+
+.final-diagnosis h2{
+font-size:42px;
+font-family:'DM Serif Display',serif;
+margin-bottom:20px;
+}
+
+.final-diagnosis p{
+font-size:18px;
+line-height:1.9;
+color:#374151;
+margin-bottom:18px;
+}
+
+.plus{
+margin-top:36px;
+padding:30px;
+border-radius:24px;
+background:white;
+border:1px solid #E5E7EB;
+}
+
+.plus-label{
+font-size:12px;
+font-weight:800;
+letter-spacing:0.08em;
+text-transform:uppercase;
+color:#2563EB;
+margin-bottom:12px;
+}
+
+.plus h3{
+font-size:32px;
+font-family:'DM Serif Display',serif;
+margin-bottom:12px;
+}
+
+.plus p{
+font-size:16px;
+line-height:1.8;
+color:#4B5563;
+margin-bottom:20px;
+}
+
+.plus-list{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:16px;
+gap:14px;
+margin-top:20px;
 }
 
-.premium-item{
-background:#FFFFFF10;
-border:1px solid #FFFFFF20;
+.plus-item{
 padding:18px;
-border-radius:16px;
-}
-
-.premium-item strong{
-display:block;
-margin-bottom:8px;
+border-radius:18px;
+background:#F9FAFB;
+border:1px solid #E5E7EB;
 font-size:15px;
-}
-
-.footer-space{
-height:100px;
+line-height:1.7;
 }
 
 .hidden{
 display:none;
+}
+
+.footer-space{
+height:120px;
 }
 
 @media(max-width:768px){
@@ -375,20 +434,20 @@ font-size:42px;
 grid-template-columns:1fr;
 }
 
-.summary-grid{
+.summary{
 grid-template-columns:1fr 1fr;
 }
 
-.premium-list{
+.plus-list{
 grid-template-columns:1fr;
 }
 
 .hero{
-padding:28px;
+padding:34px;
 }
 
 .card{
-padding:24px;
+padding:26px;
 }
 
 }
@@ -407,31 +466,32 @@ padding:24px;
 </div>
 
 <h1>
-Entendé <span class="highlight">por qué</span> hoy no te aprueban.
+Entendé <span class="highlight">qué está destruyendo</span> hoy tu perfil financiero.
 </h1>
 
 <p>
-Analizamos tu situación financiera real y te mostramos exactamente qué está frenando tu perfil crediticio, qué deuda deberías atacar primero y cómo mejorar tu situación paso a paso.
+Ya analizamos parte de tu situación según tu solicitud y encuesta inicial.  
+Ahora podemos darte un diagnóstico mucho más preciso si completás tus gastos y deudas reales.
 </p>
 
 <div class="diagnosis-box">
 
-<div class="diagnosis-title">
+<div class="diagnosis-label">
 Diagnóstico inicial
 </div>
 
 <div class="diagnosis-text">
-Tu situación muestra señales de sobrecarga financiera. Detectamos que probablemente gran parte de tus ingresos se estén consumiendo en pagos mensuales y obligaciones acumuladas.  
+Detectamos señales de sobrecarga financiera y presión mensual elevada.  
 <br><br>
-La buena noticia es que esto suele corregirse cuando se ordena correctamente qué deuda atacar primero y cómo reorganizar el flujo de dinero.
+Es probable que parte importante de tus ingresos hoy se esté yendo en pagos acumulados, intereses altos o deudas mal priorizadas.
 </div>
 
 </div>
 
-<div class="cta">
+<div class="hero-buttons">
 
 <button class="btn btn-primary" onclick="showBuilder()">
-Mejorar mi diagnóstico →
+Continuar análisis financiero →
 </button>
 
 <button class="btn btn-secondary">
@@ -447,12 +507,21 @@ Ver ejemplo
 <div class="card">
 
 <div class="section-title">
-Tus gastos mensuales
+Tu situación actual
 </div>
 
 <div class="section-sub">
-Mientras más preciso seas, mejor va a ser el diagnóstico y las recomendaciones.
+No necesitás montos exactos. Una estimación ya nos permite detectar patrones financieros importantes.
 </div>
+
+<div class="accordion">
+
+<div class="accordion-header" onclick="toggleAccordion()">
+<span>📊 Completar gastos mensuales</span>
+<span id="accordionIcon">+</span>
+</div>
+
+<div class="accordion-body" id="accordionBody">
 
 <div class="grid">
 
@@ -490,14 +559,14 @@ Mientras más preciso seas, mejor va a ser el diagnóstico y las recomendaciones
 
 </div>
 
-<div class="card">
+</div>
 
-<div class="section-title">
+<div class="section-title" style="margin-top:10px;">
 Tus deudas
 </div>
 
 <div class="section-sub">
-Cargá cada deuda por separado para detectar cuáles te están destruyendo más financieramente.
+Cargá cada deuda por separado para detectar cuáles te están generando más daño financiero.
 </div>
 
 <div id="debtContainer"></div>
@@ -506,19 +575,23 @@ Cargá cada deuda por separado para detectar cuáles te están destruyendo más 
 + Agregar deuda
 </button>
 
+<div class="insight-box">
+
+<div class="insight-title">
+Insights detectados
+</div>
+
+<div id="insights"></div>
+
+</div>
+
 <div class="summary">
-
-<h2 style="font-size:38px;font-family:'DM Serif Display',serif;">
-Tu situación actual
-</h2>
-
-<div class="summary-grid">
 
 <div class="metric">
 <div class="metric-label">Deuda total</div>
 <div class="metric-value" id="totalDebt">$0</div>
 <div class="metric-sub">
-Monto acumulado
+Monto acumulado detectado
 </div>
 </div>
 
@@ -526,7 +599,7 @@ Monto acumulado
 <div class="metric-label">Pago mensual</div>
 <div class="metric-value" id="monthlyDebt">$0</div>
 <div class="metric-sub">
-Compromiso mensual
+Presión mensual estimada
 </div>
 </div>
 
@@ -534,15 +607,15 @@ Compromiso mensual
 <div class="metric-label">Interés promedio</div>
 <div class="metric-value" id="avgInterest">0%</div>
 <div class="metric-sub">
-Costo financiero estimado
+Costo financiero promedio
 </div>
 </div>
 
 <div class="metric">
-<div class="metric-label">Riesgo</div>
+<div class="metric-label">Nivel de riesgo</div>
 <div class="metric-value" id="riskLevel">Bajo</div>
 <div class="metric-sub">
-Nivel de presión financiera
+Estado financiero estimado
 </div>
 </div>
 
@@ -550,8 +623,8 @@ Nivel de presión financiera
 
 <div class="priority">
 
-<div class="priority-title">
-Deuda prioritaria
+<div class="priority-label">
+Prioridad máxima
 </div>
 
 <h3 id="priorityTitle">
@@ -559,47 +632,61 @@ Todavía no cargaste deudas
 </h3>
 
 <p id="priorityText">
-Cuando completes tus deudas vamos a mostrarte cuál deberías atacar primero y por qué.
+Completá tus deudas para detectar cuál deberías atacar primero y por qué.
 </p>
 
 </div>
 
-</div>
-
-</div>
-
-<div class="premium">
+<div class="final-diagnosis">
 
 <h2>
-Reset Plus
+Tu diagnóstico financiero
 </h2>
 
-<p>
-Cuando termines tu diagnóstico gratuito, también vas a poder acceder a herramientas más avanzadas para salir de deudas más rápido, negociar mejor y reconstruir tu perfil financiero.
+<p id="finalDiagnosis">
+Todavía necesitamos más información para completar el análisis.
 </p>
 
-<div class="premium-list">
-
-<div class="premium-item">
-<strong>📉 Estrategia de cancelación personalizada</strong>
-Orden exacto de pago optimizado según intereses y riesgo.
 </div>
 
-<div class="premium-item">
-<strong>🏦 Recuperación de perfil crediticio</strong>
-Qué hacer para volver a calificar para crédito.
+<div class="plus">
+
+<div class="plus-label">
+Opcional
 </div>
 
-<div class="premium-item">
-<strong>⚡ Simulador de salida de deuda</strong>
-Cuánto tiempo te falta para estabilizarte.
+<h3>
+Reset Plus
+</h3>
+
+<p>
+Si querés profundizar el análisis, también vas a poder acceder a herramientas más avanzadas para acelerar tu recuperación financiera y reconstruir tu perfil crediticio.
+</p>
+
+<div class="plus-list">
+
+<div class="plus-item">
+📉 Estrategia avanzada de cancelación
 </div>
 
-<div class="premium-item">
-<strong>🤝 Ayuda para negociar deudas</strong>
-Qué decir y cómo encarar acuerdos.
+<div class="plus-item">
+🏦 Recuperación de perfil crediticio
 </div>
 
+<div class="plus-item">
+⚡ Simulador avanzado
+</div>
+
+<div class="plus-item">
+🤝 Ayuda para negociación de deudas
+</div>
+
+</div>
+
+<div style="margin-top:24px;">
+<button class="btn btn-secondary">
+Conocer Reset Plus
+</button>
 </div>
 
 </div>
@@ -613,21 +700,39 @@ Qué decir y cómo encarar acuerdos.
 <script>
 
 const interestRates = {
-tarjeta: 95,
-prestamo: 62,
-financiera: 78,
-cooperativa: 54,
-servicios: 28,
-informal: 120,
-mora: 140
+tarjeta:95,
+prestamo:62,
+financiera:78,
+cooperativa:54,
+servicios:28,
+informal:120,
+mora:140
 };
 
 function showBuilder(){
+
 document.getElementById('builder').classList.remove('hidden');
+
 window.scrollTo({
 top:document.getElementById('builder').offsetTop - 30,
 behavior:'smooth'
 });
+
+}
+
+function toggleAccordion(){
+
+const body = document.getElementById('accordionBody');
+const icon = document.getElementById('accordionIcon');
+
+if(body.style.display === 'block'){
+body.style.display = 'none';
+icon.innerText = '+';
+}else{
+body.style.display = 'block';
+icon.innerText = '−';
+}
+
 }
 
 function addDebt(){
@@ -648,7 +753,7 @@ div.innerHTML = `
 <div class="grid">
 
 <div class="field">
-<div class="label">Tipo</div>
+<div class="label">Tipo de deuda</div>
 <select class="select debt-type" onchange="calculateAll()">
 <option value="tarjeta">Tarjeta de crédito</option>
 <option value="prestamo">Préstamo bancario</option>
@@ -699,6 +804,8 @@ let weightedInterest = 0;
 let highestPriority = null;
 let highestScore = 0;
 
+let insights = [];
+
 document.querySelectorAll('.debt-card').forEach(card => {
 
 const type = card.querySelector('.debt-type').value;
@@ -718,6 +825,7 @@ const priorityScore =
 (interest * 40);
 
 if(priorityScore > highestScore){
+
 highestScore = priorityScore;
 
 highestPriority = {
@@ -727,6 +835,19 @@ amount,
 payment,
 interest
 };
+
+}
+
+if(type === 'tarjeta'){
+insights.push('⚠️ Detectamos presión financiera fuerte proveniente de tarjetas de crédito.');
+}
+
+if(type === 'informal'){
+insights.push('⚠️ Los préstamos informales suelen destruir flujo financiero muy rápido.');
+}
+
+if(type === 'mora'){
+insights.push('⚠️ Detectamos deudas en mora con impacto fuerte sobre tu perfil.');
 }
 
 });
@@ -760,9 +881,45 @@ document.getElementById('priorityTitle').innerText =
 `${highestPriority.creditor} debería ser tu foco principal`;
 
 document.getElementById('priorityText').innerText =
-`Detectamos que esta deuda probablemente esté generando el mayor daño financiero por combinación de interés, presión mensual y costo acumulado. Cuanto antes reduzcas esta deuda, más rápido vas a liberar flujo de dinero y mejorar tu perfil crediticio.`;
+`Esta deuda probablemente esté generando el mayor daño financiero por combinación de interés, presión mensual y costo acumulado.`;
 
 }
+
+let diagnosis = '';
+
+if(risk === 'Crítico'){
+
+diagnosis = `
+Tu situación financiera muestra señales claras de saturación.  
+Gran parte de tu flujo mensual probablemente se esté yendo en intereses y pagos acumulados, lo que hace muy difícil recuperar estabilidad sin reorganizar prioridades.
+
+La buena noticia es que normalmente esto mejora mucho cuando se ataca primero la deuda correcta y se libera flujo de dinero progresivamente.
+`;
+
+}else if(risk === 'Medio'){
+
+diagnosis = `
+Tu situación todavía parece recuperable sin medidas extremas, pero ya hay señales de presión financiera importantes.
+
+Probablemente hoy el problema no sea solamente cuánto debés, sino cómo están distribuidos los pagos y qué tipo de deuda estás sosteniendo.
+`;
+
+}else{
+
+diagnosis = `
+Tu situación no parece crítica todavía, pero detectamos algunos patrones que podrían deteriorarse si seguís acumulando deuda cara o pagos mensuales altos.
+`;
+
+}
+
+document.getElementById('finalDiagnosis').innerText = diagnosis;
+
+if(insights.length === 0){
+insights.push('💡 Completá tus deudas para detectar patrones financieros automáticamente.');
+}
+
+document.getElementById('insights').innerHTML =
+insights.map(i => `<div class="insight">${i}</div>`).join('');
 
 }
 
