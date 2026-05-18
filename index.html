@@ -3,816 +3,771 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>Credizona Reset</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#f6f3ee;
-  --paper:#fffaf2;
-  --ink:#151515;
-  --muted:#6f6a62;
-  --soft:#e7ded0;
-  --line:#ded4c5;
-  --green:#2f8f68;
-  --green-soft:#e9f5ef;
-  --orange:#c46a2d;
-  --orange-soft:#fff0e5;
-  --blue:#2f5f9f;
-  --dark:#171717;
-}
 
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html{
-  scroll-behavior:smooth;
+margin:0;
+padding:0;
+box-sizing:border-box;
 }
 
 body{
-  font-family:Inter,system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--ink);
-}
-
-button,input,select{
-  font-family:inherit;
-}
-
-button{
-  cursor:pointer;
+font-family:'Inter',sans-serif;
+background:#F5F7FB;
+color:#111827;
 }
 
 .container{
-  width:100%;
-  max-width:1080px;
-  margin:auto;
-  padding:0 24px;
-}
-
-.header{
-  position:sticky;
-  top:0;
-  z-index:30;
-  background:rgba(246,243,238,.92);
-  backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
-}
-
-.nav{
-  height:72px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.logo{
-  font-size:22px;
-  font-weight:900;
-  letter-spacing:-.5px;
-}
-
-.logo span{
-  color:var(--green);
-}
-
-.nav-note{
-  font-size:13px;
-  font-weight:700;
-  color:var(--muted);
-}
-
-section{
-  padding:78px 0;
+max-width:980px;
+margin:auto;
+padding:24px;
 }
 
 .hero{
-  padding:88px 0 70px;
+background:linear-gradient(135deg,#ffffff 0%,#F3F8FF 100%);
+border:1px solid #E5E7EB;
+border-radius:28px;
+padding:42px;
+box-shadow:0 10px 40px rgba(0,0,0,0.05);
+position:relative;
+overflow:hidden;
 }
 
-.hero-grid{
-  display:grid;
-  grid-template-columns:1.1fr .9fr;
-  gap:56px;
-  align-items:center;
+.hero:before{
+content:'';
+position:absolute;
+width:300px;
+height:300px;
+background:radial-gradient(circle,#2563EB20 0%,transparent 70%);
+top:-120px;
+right:-120px;
 }
 
 .badge{
-  display:inline-flex;
-  padding:8px 13px;
-  border-radius:999px;
-  background:var(--green-soft);
-  color:var(--green);
-  font-size:12px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  margin-bottom:24px;
+display:inline-flex;
+align-items:center;
+gap:8px;
+padding:10px 16px;
+background:#EFF6FF;
+border:1px solid #BFDBFE;
+border-radius:999px;
+font-size:12px;
+font-weight:700;
+color:#2563EB;
+margin-bottom:24px;
 }
 
 h1{
-  font-size:clamp(42px,6vw,72px);
-  line-height:.95;
-  letter-spacing:-.07em;
-  font-weight:900;
-  margin-bottom:26px;
+font-size:54px;
+line-height:1;
+font-family:'DM Serif Display',serif;
+margin-bottom:18px;
+max-width:700px;
 }
 
-h2{
-  font-size:clamp(32px,4vw,52px);
-  line-height:1;
-  letter-spacing:-.055em;
-  font-weight:900;
-  margin-bottom:18px;
+.hero p{
+font-size:19px;
+line-height:1.7;
+color:#4B5563;
+max-width:700px;
 }
 
-h3{
-  font-size:24px;
-  letter-spacing:-.03em;
-  margin-bottom:10px;
-}
-
-p{
-  color:var(--muted);
-  line-height:1.65;
-}
-
-.lead{
-  font-size:20px;
-  max-width:680px;
-  margin-bottom:24px;
-}
-
-.hero-copy{
-  font-size:17px;
-  max-width:640px;
-}
-
-.btn-row{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-top:32px;
-}
-
-.btn{
-  border:none;
-  border-radius:14px;
-  padding:15px 22px;
-  font-size:15px;
-  font-weight:900;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.btn-primary{
-  background:var(--dark);
-  color:white;
-}
-
-.btn-primary:hover{
-  transform:translateY(-2px);
-}
-
-.btn-secondary{
-  background:transparent;
-  color:var(--ink);
-  border:1px solid var(--line);
-}
-
-.btn-secondary:hover{
-  border-color:var(--ink);
-}
-
-.panel{
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:28px;
-  padding:34px;
-  box-shadow:0 22px 55px rgba(70,50,20,.08);
-}
-
-.diagnosis-label{
-  font-size:12px;
-  font-weight:900;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  margin-bottom:14px;
-}
-
-.diagnosis-text{
-  font-size:22px;
-  line-height:1.35;
-  letter-spacing:-.03em;
-  font-weight:800;
-  color:var(--ink);
-  margin-bottom:24px;
-}
-
-.signals{
-  display:grid;
-  gap:12px;
-}
-
-.signal{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  padding:14px;
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-}
-
-.signal span{
-  color:var(--green);
-  font-weight:900;
-}
-
-.signal div{
-  color:var(--muted);
-  font-size:14px;
-  line-height:1.5;
-}
-
-.score-row{
-  margin-top:24px;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.score-card{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:18px;
-}
-
-.score-number{
-  font-size:42px;
-  font-weight:900;
-  color:var(--orange);
-  letter-spacing:-.04em;
-}
-
-.score-title{
-  font-size:11px;
-  text-transform:uppercase;
-  font-weight:900;
-  letter-spacing:.08em;
-  color:var(--muted);
-  margin-bottom:6px;
-}
-
-.small{
-  font-size:12px;
-  color:var(--muted);
-}
-
-.section-intro{
-  max-width:760px;
-  margin-bottom:42px;
-}
-
-.section-intro.center{
-  text-align:center;
-  margin-left:auto;
-  margin-right:auto;
-}
-
-.cards{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:20px;
+.highlight{
+color:#2563EB;
 }
 
 .card{
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:24px;
-  padding:28px;
+background:white;
+border:1px solid #E5E7EB;
+border-radius:24px;
+padding:32px;
+margin-top:28px;
+box-shadow:0 6px 30px rgba(0,0,0,0.04);
 }
 
-.card-number{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--green-soft);
-  color:var(--green);
-  font-weight:900;
-  margin-bottom:18px;
+.section-title{
+font-size:32px;
+font-family:'DM Serif Display',serif;
+margin-bottom:12px;
 }
 
-.free-tools{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:22px;
+.section-sub{
+font-size:16px;
+line-height:1.7;
+color:#6B7280;
+margin-bottom:28px;
 }
 
-.tool{
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:26px;
-  padding:30px;
+.diagnosis-box{
+background:linear-gradient(135deg,#EFF6FF 0%,#ffffff 100%);
+border:1px solid #BFDBFE;
+padding:26px;
+border-radius:22px;
+margin-top:20px;
 }
 
-.tool-list{
-  display:grid;
-  gap:12px;
-  margin-top:20px;
+.diagnosis-title{
+font-size:13px;
+font-weight:800;
+letter-spacing:0.12em;
+color:#2563EB;
+margin-bottom:14px;
+text-transform:uppercase;
 }
 
-.tool-list div{
-  padding:14px;
-  border-radius:16px;
-  background:#fff;
-  border:1px solid var(--line);
-  color:var(--muted);
-  font-size:15px;
-  line-height:1.5;
+.diagnosis-text{
+font-size:20px;
+line-height:1.8;
+color:#1F2937;
 }
 
-.form-section{
-  background:#eee6db;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
+.cta{
+margin-top:30px;
+display:flex;
+gap:16px;
+flex-wrap:wrap;
 }
 
-.form-box{
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:28px;
-  padding:34px;
+.btn{
+border:none;
+cursor:pointer;
+transition:0.2s;
+padding:18px 28px;
+border-radius:16px;
+font-size:16px;
+font-weight:700;
 }
 
-.form-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-  margin-top:28px;
+.btn-primary{
+background:#2563EB;
+color:white;
+box-shadow:0 8px 25px rgba(37,99,235,0.3);
 }
 
-.form-group label{
-  display:block;
-  font-size:13px;
-  font-weight:800;
-  margin-bottom:8px;
+.btn-primary:hover{
+transform:translateY(-2px);
+background:#1D4ED8;
 }
 
-input,select{
-  width:100%;
-  height:54px;
-  border-radius:14px;
-  border:1px solid var(--line);
-  background:#fff;
-  color:var(--ink);
-  padding:0 15px;
-  font-size:15px;
-  outline:none;
+.btn-secondary{
+background:white;
+border:1px solid #D1D5DB;
+color:#374151;
 }
 
-input:focus,select:focus{
-  border-color:var(--green);
+.btn-secondary:hover{
+background:#F9FAFB;
 }
 
-.form-note{
-  margin-top:18px;
-  padding:16px;
-  border-radius:16px;
-  background:var(--green-soft);
-  color:var(--green);
-  font-weight:800;
-  font-size:14px;
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
 }
 
-.upgrade{
-  max-width:860px;
-  margin:auto;
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:28px;
-  padding:34px;
+.field{
+margin-bottom:20px;
 }
 
-.upgrade-header{
-  display:flex;
-  justify-content:space-between;
-  gap:20px;
-  align-items:flex-start;
-  margin-bottom:24px;
+.label{
+font-size:12px;
+font-weight:700;
+letter-spacing:0.08em;
+text-transform:uppercase;
+color:#6B7280;
+margin-bottom:10px;
 }
 
-.upgrade-tag{
-  display:inline-flex;
-  background:var(--orange-soft);
-  color:var(--orange);
-  padding:7px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  margin-bottom:14px;
+.input,
+.select{
+width:100%;
+padding:16px;
+border-radius:14px;
+border:1px solid #D1D5DB;
+font-size:15px;
+background:white;
+transition:0.2s;
 }
 
-.price{
-  text-align:right;
+.input:focus,
+.select:focus{
+outline:none;
+border-color:#2563EB;
+box-shadow:0 0 0 4px #DBEAFE;
 }
 
-.price strong{
-  font-size:38px;
-  color:var(--orange);
-  letter-spacing:-.04em;
+.debt-card{
+border:1px solid #E5E7EB;
+border-radius:20px;
+padding:24px;
+margin-bottom:18px;
+background:#FAFBFF;
 }
 
-.price span{
-  display:block;
-  font-size:12px;
-  color:var(--muted);
+.debt-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:18px;
 }
 
-.upgrade-list{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin:24px 0;
+.debt-number{
+font-size:12px;
+font-weight:800;
+letter-spacing:0.08em;
+color:#2563EB;
 }
 
-.upgrade-list div{
-  background:#fff;
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px;
-  color:var(--muted);
-  font-size:14px;
+.remove-btn{
+background:none;
+border:none;
+font-size:24px;
+cursor:pointer;
+color:#9CA3AF;
 }
 
-.footer{
-  text-align:center;
-  padding:70px 0;
-  border-top:1px solid var(--line);
+.remove-btn:hover{
+color:#EF4444;
 }
 
-.footer p{
-  max-width:680px;
-  margin:0 auto 28px;
-  font-size:18px;
+.summary{
+margin-top:28px;
+padding:28px;
+background:#111827;
+border-radius:24px;
+color:white;
 }
 
-.hidden-message{
-  display:none;
-  margin-top:22px;
-  padding:20px;
-  border-radius:18px;
-  background:var(--green-soft);
-  color:var(--green);
-  font-weight:800;
+.summary-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:18px;
+margin-top:24px;
 }
 
-@media(max-width:880px){
-  .hero-grid,
-  .cards,
-  .free-tools,
-  .form-grid,
-  .upgrade-list{
-    grid-template-columns:1fr;
-  }
-
-  .nav-note{
-    display:none;
-  }
-
-  .panel{
-    padding:26px;
-  }
-
-  .score-row{
-    grid-template-columns:1fr;
-  }
-
-  .upgrade-header{
-    display:block;
-  }
-
-  .price{
-    text-align:left;
-    margin-top:20px;
-  }
-
-  .btn{
-    width:100%;
-  }
+.metric{
+background:#1F2937;
+border-radius:18px;
+padding:22px;
 }
+
+.metric-label{
+font-size:12px;
+text-transform:uppercase;
+letter-spacing:0.08em;
+color:#9CA3AF;
+margin-bottom:10px;
+}
+
+.metric-value{
+font-size:32px;
+font-weight:800;
+}
+
+.metric-sub{
+font-size:13px;
+color:#9CA3AF;
+margin-top:8px;
+line-height:1.5;
+}
+
+.priority{
+margin-top:28px;
+background:#FEF2F2;
+border:1px solid #FECACA;
+padding:24px;
+border-radius:20px;
+}
+
+.priority-title{
+font-size:13px;
+font-weight:800;
+letter-spacing:0.08em;
+text-transform:uppercase;
+color:#DC2626;
+margin-bottom:10px;
+}
+
+.priority h3{
+font-size:28px;
+margin-bottom:10px;
+}
+
+.priority p{
+font-size:16px;
+line-height:1.7;
+color:#7F1D1D;
+}
+
+.premium{
+margin-top:36px;
+background:linear-gradient(135deg,#111827 0%,#1F2937 100%);
+border-radius:28px;
+padding:42px;
+color:white;
+position:relative;
+overflow:hidden;
+}
+
+.premium:before{
+content:'';
+position:absolute;
+right:-80px;
+top:-80px;
+width:240px;
+height:240px;
+background:radial-gradient(circle,#2563EB55 0%,transparent 70%);
+}
+
+.premium h2{
+font-size:40px;
+font-family:'DM Serif Display',serif;
+margin-bottom:14px;
+}
+
+.premium p{
+font-size:17px;
+line-height:1.8;
+color:#D1D5DB;
+max-width:700px;
+}
+
+.premium-list{
+margin-top:28px;
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px;
+}
+
+.premium-item{
+background:#FFFFFF10;
+border:1px solid #FFFFFF20;
+padding:18px;
+border-radius:16px;
+}
+
+.premium-item strong{
+display:block;
+margin-bottom:8px;
+font-size:15px;
+}
+
+.footer-space{
+height:100px;
+}
+
+.hidden{
+display:none;
+}
+
+@media(max-width:768px){
+
+h1{
+font-size:42px;
+}
+
+.grid{
+grid-template-columns:1fr;
+}
+
+.summary-grid{
+grid-template-columns:1fr 1fr;
+}
+
+.premium-list{
+grid-template-columns:1fr;
+}
+
+.hero{
+padding:28px;
+}
+
+.card{
+padding:24px;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
-<header class="header">
-  <div class="container nav">
-    <div class="logo">Credizona <span>Reset</span></div>
-    <div class="nav-note">Diagnóstico inicial gratis</div>
-  </div>
-</header>
+<div class="container">
 
-<main>
+<div class="hero">
 
-<section class="hero">
-  <div class="container hero-grid">
+<div class="badge">
+⚡ Diagnóstico financiero inteligente
+</div>
 
-    <div>
-      <div class="badge">Ya analizamos tus respuestas</div>
+<h1>
+Entendé <span class="highlight">por qué</span> hoy no te aprueban.
+</h1>
 
-      <h1>Encontramos señales que pueden estar frenando tu situación financiera.</h1>
+<p>
+Analizamos tu situación financiera real y te mostramos exactamente qué está frenando tu perfil crediticio, qué deuda deberías atacar primero y cómo mejorar tu situación paso a paso.
+</p>
 
-      <p class="lead">
-        No necesitás otro préstamo todavía. Primero necesitás entender qué te está trabando y qué corregir primero.
-      </p>
+<div class="diagnosis-box">
 
-      <p class="hero-copy">
-        A partir de tu solicitud rechazada y de tus respuestas, Credizona Reset genera una primera lectura para ayudarte a ordenar el próximo paso.
-      </p>
+<div class="diagnosis-title">
+Diagnóstico inicial
+</div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="scrollToSection('diagnostico')">
-          Ver mi diagnóstico completo
-        </button>
+<div class="diagnosis-text">
+Tu situación muestra señales de sobrecarga financiera. Detectamos que probablemente gran parte de tus ingresos se estén consumiendo en pagos mensuales y obligaciones acumuladas.  
+<br><br>
+La buena noticia es que esto suele corregirse cuando se ordena correctamente qué deuda atacar primero y cómo reorganizar el flujo de dinero.
+</div>
 
-        <button class="btn btn-secondary" onclick="scrollToSection('gratis')">
-          Ver herramientas gratis
-        </button>
-      </div>
+</div>
 
-      <p class="small" style="margin-top:18px;">
-        El Índice Reset no es un score crediticio oficial y no garantiza aprobación futura.
-      </p>
-    </div>
+<div class="cta">
 
-    <div class="panel">
-      <div class="diagnosis-label">Primera lectura</div>
+<button class="btn btn-primary" onclick="showBuilder()">
+Mejorar mi diagnóstico →
+</button>
 
-      <div class="diagnosis-text">
-        Tu problema no parece ser solamente cuánto debés. Detectamos señales de presión financiera mensual y posible pérdida de margen.
-      </div>
+<button class="btn btn-secondary">
+Ver ejemplo
+</button>
 
-      <div class="signals">
-        <div class="signal">
-          <span>✓</span>
-          <div>Presión de cuotas o pagos mínimos sobre el ingreso.</div>
-        </div>
+</div>
 
-        <div class="signal">
-          <span>✓</span>
-          <div>Riesgo de seguir acumulando deuda si no se ordena una prioridad.</div>
-        </div>
+</div>
 
-        <div class="signal">
-          <span>✓</span>
-          <div>Necesidad de identificar una deuda foco antes de volver a pedir crédito.</div>
-        </div>
-      </div>
+<div id="builder" class="hidden">
 
-      <div class="score-row">
-        <div class="score-card">
-          <div class="score-title">Nivel preliminar</div>
-          <div class="score-number">Alto</div>
-          <div class="small">Según encuesta y solicitud</div>
-        </div>
+<div class="card">
 
-        <div class="score-card">
-          <div class="score-title">Precisión actual</div>
-          <div class="score-number">70%</div>
-          <div class="small">Puede subir al cargar gastos/deudas</div>
-        </div>
-      </div>
-    </div>
+<div class="section-title">
+Tus gastos mensuales
+</div>
 
-  </div>
-</section>
+<div class="section-sub">
+Mientras más preciso seas, mejor va a ser el diagnóstico y las recomendaciones.
+</div>
 
-<section id="diagnostico">
-  <div class="container">
+<div class="grid">
 
-    <div class="section-intro center">
-      <h2>Tu diagnóstico inicial ya empezó.</h2>
-      <p>
-        No arrancás de cero. Ya tenemos señales. Ahora te mostramos qué significan y cómo convertirlas en un plan.
-      </p>
-    </div>
+<div class="field">
+<div class="label">Alquiler / vivienda</div>
+<input class="input gasto" type="number">
+</div>
 
-    <div class="cards">
-      <div class="card">
-        <div class="card-number">1</div>
-        <h3>Qué te está frenando</h3>
-        <p>
-          El rechazo puede venir por carga mensual, historial, atrasos, exceso de cuotas o bajo margen.
-        </p>
-      </div>
+<div class="field">
+<div class="label">Servicios</div>
+<input class="input gasto" type="number">
+</div>
 
-      <div class="card">
-        <div class="card-number">2</div>
-        <h3>Qué no hacer ahora</h3>
-        <p>
-          No conviene pedir otro préstamo sin entender primero qué está dañando tu perfil.
-        </p>
-      </div>
+<div class="field">
+<div class="label">Alimentación</div>
+<input class="input gasto" type="number">
+</div>
 
-      <div class="card">
-        <div class="card-number">3</div>
-        <h3>Qué hacer primero</h3>
-        <p>
-          Ordenar una deuda foco, recuperar margen mensual y evitar nuevos compromisos por 30 días.
-        </p>
-      </div>
-    </div>
+<div class="field">
+<div class="label">Transporte</div>
+<input class="input gasto" type="number">
+</div>
 
-  </div>
-</section>
+<div class="field">
+<div class="label">Salud</div>
+<input class="input gasto" type="number">
+</div>
 
-<section id="gratis">
-  <div class="container">
+<div class="field">
+<div class="label">Otros gastos</div>
+<input class="input gasto" type="number">
+</div>
 
-    <div class="section-intro">
-      <h2>Herramientas gratis primero.</h2>
-      <p>
-        Queremos que esto te sirva antes de pedirte nada. Podés ver una primera lectura, señales detectadas y un plan resumido sin pagar.
-      </p>
-    </div>
+</div>
 
-    <div class="free-tools">
-      <div class="tool">
-        <h3>Incluido gratis</h3>
+</div>
 
-        <div class="tool-list">
-          <div>✓ Diagnóstico narrativo inicial</div>
-          <div>✓ Nivel preliminar de urgencia</div>
-          <div>✓ Señales detectadas</div>
-          <div>✓ Primera acción recomendada</div>
-          <div>✓ Plan resumido de 30 días</div>
-        </div>
-      </div>
+<div class="card">
 
-      <div class="tool">
-        <h3>Después podés profundizar</h3>
+<div class="section-title">
+Tus deudas
+</div>
 
-        <div class="tool-list">
-          <div>✓ Mejorar precisión con gastos y deudas</div>
-          <div>✓ Simulador básico</div>
-          <div>✓ Deuda foco</div>
-          <div>✓ Perfil crediticio básico</div>
-          <div>✓ Informe explicado si querés ir más a fondo</div>
-        </div>
-      </div>
-    </div>
+<div class="section-sub">
+Cargá cada deuda por separado para detectar cuáles te están destruyendo más financieramente.
+</div>
 
-  </div>
-</section>
+<div id="debtContainer"></div>
 
-<section class="form-section">
-  <div class="container">
+<button class="btn btn-secondary" onclick="addDebt()">
++ Agregar deuda
+</button>
 
-    <div class="form-box">
-      <div class="section-intro" style="margin-bottom:0;">
-        <h2>Mejorar precisión del análisis</h2>
-        <p>
-          Si querés que el diagnóstico sea más exacto, confirmá tus gastos y deudas. Te lleva pocos minutos y mejora la lectura.
-        </p>
-      </div>
+<div class="summary">
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Ingreso mensual aproximado</label>
-          <input type="number" placeholder="$ 45.000">
-        </div>
+<h2 style="font-size:38px;font-family:'DM Serif Display',serif;">
+Tu situación actual
+</h2>
 
-        <div class="form-group">
-          <label>Total aproximado de deudas</label>
-          <input type="number" placeholder="$ 120.000">
-        </div>
+<div class="summary-grid">
 
-        <div class="form-group">
-          <label>Cuánto pagás por mes en cuotas o mínimos</label>
-          <input type="number" placeholder="$ 18.000">
-        </div>
+<div class="metric">
+<div class="metric-label">Deuda total</div>
+<div class="metric-value" id="totalDebt">$0</div>
+<div class="metric-sub">
+Monto acumulado
+</div>
+</div>
 
-        <div class="form-group">
-          <label>Estado actual</label>
-          <select>
-            <option>Seleccioná una opción</option>
-            <option>Estoy al día pero muy ajustado</option>
-            <option>Tengo atrasos leves</option>
-            <option>Tengo deudas en mora</option>
-            <option>No sé exactamente dónde estoy parado</option>
-          </select>
-        </div>
-      </div>
+<div class="metric">
+<div class="metric-label">Pago mensual</div>
+<div class="metric-value" id="monthlyDebt">$0</div>
+<div class="metric-sub">
+Compromiso mensual
+</div>
+</div>
 
-      <div class="form-note">
-        Esto no reemplaza un informe crediticio oficial. Sirve para mejorar tu diagnóstico Reset.
-      </div>
+<div class="metric">
+<div class="metric-label">Interés promedio</div>
+<div class="metric-value" id="avgInterest">0%</div>
+<div class="metric-sub">
+Costo financiero estimado
+</div>
+</div>
 
-      <div class="btn-row">
-        <button class="btn btn-primary" onclick="showFreeResult()">
-          Mejorar mi diagnóstico
-        </button>
-      </div>
+<div class="metric">
+<div class="metric-label">Riesgo</div>
+<div class="metric-value" id="riskLevel">Bajo</div>
+<div class="metric-sub">
+Nivel de presión financiera
+</div>
+</div>
 
-      <div id="freeResult" class="hidden-message">
-        Diagnóstico mejorado: tu prioridad es identificar la deuda que más presión genera y evitar nuevas cuotas durante 30 días.
-      </div>
-    </div>
+</div>
 
-  </div>
-</section>
+<div class="priority">
 
-<section>
-  <div class="container">
+<div class="priority-title">
+Deuda prioritaria
+</div>
 
-    <div class="upgrade">
-      <div class="upgrade-header">
-        <div>
-          <div class="upgrade-tag">Opcional</div>
+<h3 id="priorityTitle">
+Todavía no cargaste deudas
+</h3>
 
-          <h2>¿Querés ir más a fondo?</h2>
+<p id="priorityText">
+Cuando completes tus deudas vamos a mostrarte cuál deberías atacar primero y por qué.
+</p>
 
-          <p>
-            Reset Plus es para quien quiere entender mejor qué puede estar viendo el banco y recibir un análisis más completo.
-          </p>
-        </div>
+</div>
 
-        <div class="price">
-          <strong>UYU 990</strong>
-          <span>Pago único · Sin suscripción</span>
-        </div>
-      </div>
+</div>
 
-      <div class="upgrade-list">
-        <div>✓ Informe crediticio / bureau equivalente</div>
-        <div>✓ Interpretación simple del informe</div>
-        <div>✓ Plan de 30 días más detallado</div>
-        <div>✓ Deuda foco y prioridad exacta</div>
-        <div>✓ Análisis IA completo</div>
-        <div>✓ Seguimiento por WhatsApp</div>
-      </div>
+</div>
 
-      <p style="margin-bottom:22px;">
-        Menos que una cuota atrasada. Menos que seguir pidiendo préstamos a ciegas.
-      </p>
+<div class="premium">
 
-      <button class="btn btn-secondary" onclick="openCheckout()">
-        Desbloquear análisis completo
-      </button>
-    </div>
+<h2>
+Reset Plus
+</h2>
 
-  </div>
-</section>
+<p>
+Cuando termines tu diagnóstico gratuito, también vas a poder acceder a herramientas más avanzadas para salir de deudas más rápido, negociar mejor y reconstruir tu perfil financiero.
+</p>
 
-<footer class="footer">
-  <div class="container">
-    <h2>Primero alivio. Después claridad. Después acción.</h2>
+<div class="premium-list">
 
-    <p>
-      Credizona Reset no promete magia. Te muestra qué está pasando, qué corregir primero y cuándo tiene sentido volver a intentar.
-    </p>
+<div class="premium-item">
+<strong>📉 Estrategia de cancelación personalizada</strong>
+Orden exacto de pago optimizado según intereses y riesgo.
+</div>
 
-    <button class="btn btn-primary" onclick="scrollToSection('diagnostico')">
-      Volver a mi diagnóstico
-    </button>
-  </div>
-</footer>
+<div class="premium-item">
+<strong>🏦 Recuperación de perfil crediticio</strong>
+Qué hacer para volver a calificar para crédito.
+</div>
 
-</main>
+<div class="premium-item">
+<strong>⚡ Simulador de salida de deuda</strong>
+Cuánto tiempo te falta para estabilizarte.
+</div>
+
+<div class="premium-item">
+<strong>🤝 Ayuda para negociar deudas</strong>
+Qué decir y cómo encarar acuerdos.
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="footer-space"></div>
+
+</div>
 
 <script>
-function scrollToSection(id){
-  const el = document.getElementById(id);
-  if(el){
-    el.scrollIntoView({
-      behavior:"smooth",
-      block:"start"
-    });
-  }
+
+const interestRates = {
+tarjeta: 95,
+prestamo: 62,
+financiera: 78,
+cooperativa: 54,
+servicios: 28,
+informal: 120,
+mora: 140
+};
+
+function showBuilder(){
+document.getElementById('builder').classList.remove('hidden');
+window.scrollTo({
+top:document.getElementById('builder').offsetTop - 30,
+behavior:'smooth'
+});
 }
 
-function showFreeResult(){
-  const box = document.getElementById("freeResult");
-  if(box){
-    box.style.display = "block";
-  }
+function addDebt(){
+
+const container = document.getElementById('debtContainer');
+
+const div = document.createElement('div');
+
+div.className = 'debt-card';
+
+div.innerHTML = `
+
+<div class="debt-header">
+<div class="debt-number">DEUDA</div>
+<button class="remove-btn" onclick="removeDebt(this)">×</button>
+</div>
+
+<div class="grid">
+
+<div class="field">
+<div class="label">Tipo</div>
+<select class="select debt-type" onchange="calculateAll()">
+<option value="tarjeta">Tarjeta de crédito</option>
+<option value="prestamo">Préstamo bancario</option>
+<option value="financiera">Financiera</option>
+<option value="cooperativa">Cooperativa</option>
+<option value="servicios">Servicios</option>
+<option value="informal">Préstamo informal</option>
+<option value="mora">Deuda en mora</option>
+</select>
+</div>
+
+<div class="field">
+<div class="label">Acreedor</div>
+<input class="input creditor" type="text" placeholder="Ej: OCA, BROU, Creditel">
+</div>
+
+<div class="field">
+<div class="label">Monto deuda</div>
+<input class="input debt-amount" type="number" oninput="calculateAll()">
+</div>
+
+<div class="field">
+<div class="label">Pago mensual</div>
+<input class="input debt-payment" type="number" oninput="calculateAll()">
+</div>
+
+</div>
+
+`;
+
+container.appendChild(div);
+
+calculateAll();
+
 }
 
-function openCheckout(){
-  const checkoutUrl = "https://mpago.la/TU_LINK";
-  window.open(checkoutUrl, "_blank");
+function removeDebt(btn){
+btn.parentElement.parentElement.remove();
+calculateAll();
 }
+
+function calculateAll(){
+
+let totalDebt = 0;
+let totalPayment = 0;
+let weightedInterest = 0;
+
+let highestPriority = null;
+let highestScore = 0;
+
+document.querySelectorAll('.debt-card').forEach(card => {
+
+const type = card.querySelector('.debt-type').value;
+const creditor = card.querySelector('.creditor').value || 'Sin acreedor';
+const amount = parseFloat(card.querySelector('.debt-amount').value) || 0;
+const payment = parseFloat(card.querySelector('.debt-payment').value) || 0;
+
+const interest = interestRates[type] || 50;
+
+totalDebt += amount;
+totalPayment += payment;
+weightedInterest += amount * interest;
+
+const priorityScore =
+(amount * 0.15) +
+(payment * 0.2) +
+(interest * 40);
+
+if(priorityScore > highestScore){
+highestScore = priorityScore;
+
+highestPriority = {
+type,
+creditor,
+amount,
+payment,
+interest
+};
+}
+
+});
+
+const avgInterest = totalDebt > 0
+? Math.round(weightedInterest / totalDebt)
+: 0;
+
+document.getElementById('totalDebt').innerText =
+'$' + totalDebt.toLocaleString('es-UY');
+
+document.getElementById('monthlyDebt').innerText =
+'$' + totalPayment.toLocaleString('es-UY');
+
+document.getElementById('avgInterest').innerText =
+avgInterest + '%';
+
+let risk = 'Bajo';
+
+if(totalPayment > 50000 || avgInterest > 90){
+risk = 'Crítico';
+}else if(totalPayment > 25000 || avgInterest > 60){
+risk = 'Medio';
+}
+
+document.getElementById('riskLevel').innerText = risk;
+
+if(highestPriority){
+
+document.getElementById('priorityTitle').innerText =
+`${highestPriority.creditor} debería ser tu foco principal`;
+
+document.getElementById('priorityText').innerText =
+`Detectamos que esta deuda probablemente esté generando el mayor daño financiero por combinación de interés, presión mensual y costo acumulado. Cuanto antes reduzcas esta deuda, más rápido vas a liberar flujo de dinero y mejorar tu perfil crediticio.`;
+
+}
+
+}
+
+addDebt();
+
 </script>
 
 </body>
