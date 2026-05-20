@@ -600,7 +600,7 @@ function calcularEncuesta(resp) {
     .reduce((s,k)=>{ const val=v(k); return s+(val!==null?val:0); }, 0);
 
   // Normalizar a 0-100 para compatibilidad con el motor
-  const score = Math.round(scoreTotal/30*100);
+  const score = scoreTotal; // 0-30 scale, no normalization
 
   // Segmentacion: A=24-30, B=15-23, C=0-14
   let nivel = scoreTotal>=24?"A":scoreTotal>=15?"B":"C";
@@ -1271,7 +1271,7 @@ function renderTabPlan(){
     +'</div>'
     +'<div style="text-align:right;flex-shrink:0;">'
     +'<div class="score-big" style="color:'+colorScore(d.scoreReset)+';">'+d.scoreReset+'</div>'
-    +'<div style="font-size:14px;color:#8390b5;margin-top:4px;">de 100</div>'
+    +'<div style="font-size:14px;color:#8390b5;margin-top:4px;">de 30</div>'
     +'<div style="font-size:14px;font-weight:800;color:'+colorNivel(d.nivelR)+';margin-top:6px;">'+nivelTexto(d.nivelR)+'</div>'
     +'</div>'
     +'</div>'
