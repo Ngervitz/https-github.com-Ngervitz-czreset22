@@ -932,3 +932,12 @@ function abrirModalPremium() {
     });
   }
 }
+
+// Exponer funciones que app.js necesita como globales
+window.renderAll  = renderAll;
+window.renderTab  = renderTab;
+window.renderDeudaCard    = renderDeudaCard;
+window.actualizarMetrics  = actualizarMetrics;
+window.bindTabEvents      = bindTabEvents;
+window.abrirModalPremium  = abrirModalPremium;
+window.mostrarEvaluacion  = mostrarEvaluacion;
