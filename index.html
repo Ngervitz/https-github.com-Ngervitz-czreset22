@@ -560,7 +560,7 @@ function buildCRMData(motor) {
   return {
     user:{nombre:PRE.nombre,cedula:PRE.cedula,email:PRE.email,telefono:PRE.telefono,
       ingreso_declarado:PRE.ingreso,situacion_laboral:PRE.laboral,monto_solicitado:PRE.monto,segmento:SEGMENTO},
-    survey:{survey_completed:TIENE_ENCUESTA,survey_score:motor?.enc?.score,survey_segment:motor?.enc?.nivel},
+    survey:{completada:TIENE_ENCUESTA,score:motor?.enc?.score,nivel:motor?.enc?.nivel,b_plus:motor?.enc?.bPlus,flags:motor?.enc?.flagsRiesgo,version_algoritmo:"reset_v2_simple"},
     expenses:gastos,
     debts:deudas.map(d=>({...d,interes_estimado:TASAS[d.tipo]||62,priority_score:calcularPrioridad(d)})),
     diagnosis:motor?{deuda_total:motor.fin.totalDeuda,pago_mensual_total:motor.fin.totalPago,
@@ -591,18 +591,33 @@ function nivelTexto(n){return n==="A"?"MANEJABLE":n==="B+"?"MUY BUENO":n==="B"?"
 // =============================================================================
 function p2n(r){return r==="A"?3:r==="B"?2:r==="C"?1:r==="D"?0:null;}
 function calcularEncuesta(resp) {
-  if(!resp||!TIENE_ENCUESTA) return {score:50,nivel:"B",bPlus:false,flagsRiesgo:[],bloques:{}};
-  const v=k=>p2n(resp["p"+k]);
-  const norm=arr=>{const vals=arr.filter(x=>x!==null);return vals.length?vals.reduce((s,x)=>s+x,0)/(vals.length*3)*100:50;};
-  const score=Math.round(norm([v(1),v(2),v(7)])*.30+norm([v(4),v(6),v(10)])*.30+norm([v(3),v(9)])*.20+norm([v(5),v(8)])*.20);
-  let nivel=score>=70?"A":score>=40?"B":"C";
-  const flags=[];
+  // Algoritmo reset_v2_simple — suma directa P1-P10, max 30 pts
+  if(!resp||!TIENE_ENCUESTA) return {score:50,scoreTotal:0,nivel:"B",bPlus:false,flagsRiesgo:[],version:"reset_v2_simple"};
+  const v = k => p2n(resp["p"+k]);
+
+  // Suma directa de los 10 items (0-3 cada uno, max 30)
+  const scoreTotal = [1,2,3,4,5,6,7,8,9,10]
+    .reduce((s,k)=>{ const val=v(k); return s+(val!==null?val:0); }, 0);
+
+  // Normalizar a 0-100 para compatibilidad con el motor
+  const score = Math.round(scoreTotal/30*100);
+
+  // Segmentacion: A=24-30, B=15-23, C=0-14
+  let nivel = scoreTotal>=24?"A":scoreTotal>=15?"B":"C";
+  const flags = [];
+
+  // Reglas duras — forzar C
   if(resp.p6==="D"){nivel="C";flags.push("prestamo_informal");}
-  if(resp.p8==="D"){nivel="C";flags.push("sin_accion");}
+  if(resp.p8==="D"){nivel="C";flags.push("sin_accion_reciente");}
   if(resp.p10==="D"){nivel="C";flags.push("sin_constancia");}
-  if(nivel==="A"&&(resp.p3==="C"||resp.p3==="D")){nivel="B";flags.push("baja_responsabilidad");}
-  const bPlus=nivel==="B"&&resp.p8==="A"&&(resp.p3==="A"||resp.p3==="B")&&(resp.p10==="A"||resp.p10==="B");
-  return {score,nivel:bPlus?"B+":nivel,nivelBase:nivel,bPlus,flagsRiesgo:flags};
+
+  // Flag B+: nivel B con buena disposicion al cambio
+  const bPlus = nivel==="B"
+    && resp.p8==="A"
+    && (resp.p3==="A"||resp.p3==="B")
+    && (resp.p10==="A"||resp.p10==="B");
+
+  return {score:scoreTotal,nivel:bPlus?"B+":nivel,nivelBase:nivel,bPlus,flagsRiesgo:flags,version:"reset_v2_simple"};
 }
 
 // =============================================================================
@@ -1072,6 +1087,168 @@ function renderTab(){
   if(activeTab==="plus")el.innerHTML=renderTabPlus();
 }
 
+
+// =============================================================================
+// RADIOGRAFIA FINANCIERA — 5 indicadores de valor real
+// Tasas estimadas de mercado — disclaimer visible en cada calculo
+// =============================================================================
+function calcularRadiografia() {
+  const fin = calcularFinanciero();
+  const ing = PRE.ingreso;
+
+  // 1. Cuanto pagas de interes puro por mes (no reduce capital)
+  const interesMensualTotal = deudas.reduce((s,d) => {
+    const monto = parseFloat(d.monto)||0;
+    const tasa  = TASAS[d.tipo]||62;
+    return s + monto * (tasa/100/12);
+  }, 0);
+  const capitalMensual = Math.max(0, fin.totalPago - interesMensualTotal);
+
+  // 2. Meses para cancelar cada deuda al ritmo actual
+  const mesesPorDeuda = deudas.map(d => {
+    const monto = parseFloat(d.monto)||0;
+    const pago  = parseFloat(d.pago)||0;
+    const tasa  = (TASAS[d.tipo]||62)/100/12;
+    if(pago<=0||monto<=0) return null;
+    if(pago <= monto*tasa) return 999; // nunca cancela
+    const meses = Math.ceil(-Math.log(1 - monto*tasa/pago) / Math.log(1+tasa));
+    return isFinite(meses) ? meses : 999;
+  });
+
+  // 3. Ahorro si paga $X extra en la deuda prioritaria
+  const prio = deudaPrioritaria();
+  let ahorroPagandoExtra = null;
+  if(prio) {
+    const monto = parseFloat(prio.monto)||0;
+    const pago  = parseFloat(prio.pago)||0;
+    const extra = Math.round(ing * 0.05); // 5% del ingreso como extra
+    const tasa  = (TASAS[prio.tipo]||62)/100/12;
+    if(pago>monto*tasa && (pago+extra)>monto*tasa) {
+      const mesesSin  = Math.ceil(-Math.log(1-monto*tasa/pago)/Math.log(1+tasa));
+      const mesesCon  = Math.ceil(-Math.log(1-monto*tasa/(pago+extra))/Math.log(1+tasa));
+      const interesTotal = (pago*mesesSin) - monto;
+      const interesCon   = ((pago+extra)*mesesCon) - monto;
+      ahorroPagandoExtra = {
+        extra, mesesSin, mesesCon,
+        ahorro: Math.max(0, interesTotal - interesCon),
+        mesesMenos: Math.max(0, mesesSin - mesesCon),
+      };
+    }
+  }
+
+  // 4. % del sueldo comprometido antes de que llegue
+  const comprometido = fin.totalGastos + fin.totalPago;
+  const pctComprometido = ing>0 ? Math.min(Math.round(comprometido/ing*100),100) : 0;
+
+  // 5. Estimacion de cuando podria calificar
+  const ratioActual = fin.ratio;
+  const metaRatio   = 0.30;
+  let mesesParaCalificar = null;
+  if(fin.cantMoras === 0 && ratioActual <= metaRatio && fin.flujoLibre > ing*.15) {
+    mesesParaCalificar = 1;
+  } else {
+    let meses = 0;
+    if(fin.cantMoras > 0)          meses += fin.cantMoras * 3;
+    if(ratioActual > 0.5)          meses += 9;
+    else if(ratioActual > 0.35)    meses += 4;
+    if(fin.flujoLibre < 0)         meses += 6;
+    else if(fin.flujoLibre < ing*.15) meses += 2;
+    mesesParaCalificar = Math.max(1, meses);
+  }
+  const fechaCalificar = new Date();
+  fechaCalificar.setMonth(fechaCalificar.getMonth() + mesesParaCalificar);
+  const mesCalifica = fechaCalificar.toLocaleDateString("es-UY", {month:"long", year:"numeric"});
+
+  return {interesMensualTotal, capitalMensual, mesesPorDeuda, ahorroPagandoExtra,
+    pctComprometido, comprometido, mesesParaCalificar, mesCalifica, fin, prio};
+}
+
+function renderRadiografia() {
+  if(!diag || deudas.length === 0) return "";
+  const r = calcularRadiografia();
+  const DISCLAIMER = '<div style="font-size:12px;color:#8390b5;margin-top:6px;">* Basado en tasas estimadas de mercado. Tu tasa real puede variar.</div>';
+
+  return '<div style="margin-bottom:20px;">'
+
+    // Header
+    +'<div style="font-size:11px;font-weight:800;color:#8390b5;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;">Tu radiografia financiera</div>'
+
+    // 1. Interes puro mensual
+    +'<div style="background:rgba(255,78,114,.07);border:1px solid rgba(255,78,114,.2);border-radius:18px;padding:20px;margin-bottom:12px;">'
+    +'<div style="font-size:13px;font-weight:800;color:#ff4e72;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">💸 Lo que pagas sin reducir deuda</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
+    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Solo intereses por mes</div>'
+    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#ff4e72;line-height:1;letter-spacing:-1px;">'+fmt(Math.round(r.interesMensualTotal))+'</div>'
+    +'<div style="font-size:12px;color:#8390b5;margin-top:4px;">plata que desaparece</div></div>'
+    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Solo en un ano</div>'
+    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#ffd447;line-height:1;letter-spacing:-1px;">'+fmt(Math.round(r.interesMensualTotal*12))+'</div>'
+    +'<div style="font-size:12px;color:#8390b5;margin-top:4px;">si no cambia nada</div></div>'
+    +'</div>'+DISCLAIMER+'</div>'
+
+    // 2. Meses para cancelar cada deuda
+    +(deudas.some((_,i)=>r.mesesPorDeuda[i]!==null)
+    ?'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;margin-bottom:12px;">'
+    +'<div style="font-size:13px;font-weight:800;color:#ffd447;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">📅 Cuando cancelarias cada deuda</div>'
+    +deudas.map((d,i)=>{
+      const meses = r.mesesPorDeuda[i];
+      if(meses===null) return "";
+      const nombre = d.acreedor||DEBT_TYPES.find(t=>t.v===d.tipo)?.l||"Deuda #"+(i+1);
+      const color  = meses>=60?"#ff4e72":meses>=24?"#ffd447":"#34ffaf";
+      const txt    = meses>=999?"Nunca con el pago actual":meses===1?"1 mes":meses+" meses";
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+        +'<div style="font-size:15px;font-weight:700;">'+nombre+'</div>'
+        +'<div style="font-family:Syne,sans-serif;font-size:20px;font-weight:900;color:'+color+';">'+txt+'</div>'
+        +'</div>';
+    }).join("")
+    +DISCLAIMER+'</div>':"")
+
+    // 3. Ahorro pagando extra
+    +(r.ahorroPagandoExtra
+    ?'<div style="background:rgba(52,255,175,.07);border:1px solid rgba(52,255,175,.2);border-radius:18px;padding:20px;margin-bottom:12px;">'
+    +'<div style="font-size:13px;font-weight:800;color:#34ffaf;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">⚡ Si pagas '+fmt(r.ahorroPagandoExtra.extra)+' extra por mes</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
+    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Te ahorras en intereses</div>'
+    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#34ffaf;line-height:1;letter-spacing:-1px;">'+fmt(Math.round(r.ahorroPagandoExtra.ahorro))+'</div></div>'
+    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Cancelas '+r.ahorroPagandoExtra.mesesMenos+' meses antes</div>'
+    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#34ffaf;line-height:1;letter-spacing:-1px;">'+r.ahorroPagandoExtra.mesesCon+' meses</div>'
+    +'<div style="font-size:12px;color:#8390b5;margin-top:4px;">vs '+r.ahorroPagandoExtra.mesesSin+' meses sin el extra</div></div>'
+    +'</div>'
+    +'<div style="margin-top:12px;font-size:14px;color:#8390b5;">Aplicado a tu deuda prioritaria: <strong style="color:rgba(255,255,255,.8);">'+(r.prio?.acreedor||DEBT_TYPES.find(t=>t.v===r.prio?.tipo)?.l||"deuda principal")+'</strong></div>'
+    +DISCLAIMER+'</div>':"")
+
+    // 4. % comprometido del sueldo
+    +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;margin-bottom:12px;">'
+    +'<div style="font-size:13px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">📊 De tu sueldo, cuanto ya esta comprometido</div>'
+    +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">'
+    +'<div style="font-family:Syne,sans-serif;font-size:52px;font-weight:900;color:'+(r.pctComprometido>85?"#ff4e72":r.pctComprometido>70?"#ffd447":"#34ffaf")+';line-height:1;letter-spacing:-2px;">'+r.pctComprometido+'%</div>'
+    +'<div style="font-size:15px;color:#8390b5;line-height:1.5;">'+(r.pctComprometido>85?"Casi todo tu sueldo ya esta gastado antes de que llegue.":r.pctComprometido>70?"La mayoria de tu sueldo ya tiene destino fijo.":"Tenes un margen razonable para maniobrar.")+'</div>'
+    +'</div>'
+    +'<div style="height:14px;background:rgba(255,255,255,.08);border-radius:7px;overflow:hidden;margin-bottom:8px;">'
+    +'<div style="height:100%;border-radius:7px;width:'+r.pctComprometido+'%;background:'+(r.pctComprometido>85?"#ff4e72":r.pctComprometido>70?"#ffd447":"#34ffaf")+';transition:width .6s ease;"></div>'
+    +'</div>'
+    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#8390b5;"><span>Comprometido: '+fmt(Math.round(r.comprometido))+'</span><span>Libre: '+fmt(Math.max(0,PRE.ingreso-r.comprometido))+'</span></div>'
+    +'</div>'
+
+    // 5. Cuando podria calificar
+    +'<div style="background:linear-gradient(135deg,rgba(91,124,255,.12),rgba(61,220,255,.08));border:1px solid rgba(91,124,255,.3);border-radius:18px;padding:20px;">'
+    +'<div style="font-size:13px;font-weight:800;color:#5b7cff;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">🎯 Cuando podrias volver a calificar</div>'
+    +(r.mesesParaCalificar===1
+    ?'<div style="font-family:Syne,sans-serif;font-size:28px;font-weight:900;color:#34ffaf;margin-bottom:8px;">Muy pronto — menos de 1 mes</div>'
+    +'<div style="font-size:15px;color:#8390b5;line-height:1.6;">Tu perfil esta cerca del umbral de aprobacion. Con algunos ajustes menores podes intentarlo.</div>'
+    :'<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">'
+    +'<div style="font-family:Syne,sans-serif;font-size:52px;font-weight:900;color:#40d7ff;line-height:1;letter-spacing:-2px;">'+r.mesesParaCalificar+'</div>'
+    +'<div style="font-size:20px;font-weight:700;color:#8390b5;">meses</div>'
+    +'</div>'
+    +'<div style="font-size:16px;color:rgba(255,255,255,.8);font-weight:700;margin-bottom:8px;">Aproximadamente '+r.mesCalifica+'</div>'
+    +'<div style="font-size:14px;color:#8390b5;line-height:1.6;">Siguiendo el plan asignado y sin tomar nuevas deudas. Esta es una proyeccion basada en los datos que declaraste.</div>')
+    +'<div style="margin-top:14px;padding:12px 14px;background:rgba(61,220,255,.08);border:1px solid rgba(61,220,255,.15);border-radius:12px;font-size:13px;color:#8390b5;line-height:1.6;">'
+    +'<strong style="color:#40d7ff;">Para confirmar esta proyeccion</strong> necesitas saber exactamente que ve el banco sobre vos. Eso es lo que incluye Reset Plus.'
+    +'</div>'
+    +'</div>'
+
+    +'</div>';
+}
+
 // =============================================================================
 // TAB: MI PLAN
 // =============================================================================
@@ -1121,6 +1298,9 @@ function renderTabPlan(){
     +'</div>'
     +'<div style="margin-top:14px;font-size:15px;color:#8390b5;text-align:center;">Revision sugerida en <strong style="color:rgba(255,255,255,.8);">'+d.plan.reevaluacion+'</strong></div>'
     +'</div>'
+
+    // Radiografia
+    +renderRadiografia()
 
     // Metricas
     +'<div class="metrics">'
