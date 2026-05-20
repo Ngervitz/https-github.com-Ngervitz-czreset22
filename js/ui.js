@@ -933,11 +933,273 @@ function abrirModalPremium() {
   }
 }
 
-// Exponer funciones que app.js necesita como globales
-window.renderAll  = renderAll;
-window.renderTab  = renderTab;
-window.renderDeudaCard    = renderDeudaCard;
-window.actualizarMetrics  = actualizarMetrics;
-window.bindTabEvents      = bindTabEvents;
-window.abrirModalPremium  = abrirModalPremium;
-window.mostrarEvaluacion  = mostrarEvaluacion;
+
+
+// =============================================================================
+// RENDER PRINCIPAL Y BINDINGS GENERALES
+// =============================================================================
+function renderAll() {
+  updateHeader();
+  updateSticky();
+
+  var st = window.CZState || {};
+  var main = document.getElementById("main-content");
+  if (!main) return;
+
+  if (st.step === 0 && SEGMENTO === 1) {
+    main.innerHTML = renderDiagInicial();
+  } else if (st.step === 0 || st.step === 1) {
+    main.innerHTML = renderGastos();
+  } else if (st.step === 2) {
+    main.innerHTML = renderDeudas();
+  } else {
+    main.innerHTML = renderDashboard();
+    renderTab();
+  }
+
+  bindTabEvents();
+  updateHeader();
+  updateSticky();
+}
+
+function bindTabEvents() {
+  // Accordion gastos
+  document.querySelectorAll("[data-accordion]").forEach(function(btn) {
+    btn.onclick = function() {
+      btn.classList.toggle("open");
+      var body = btn.parentElement ? btn.parentElement.querySelector(".accordion-body") : null;
+      if (body) body.classList.toggle("open");
+    };
+  });
+
+  // Inputs gastos
+  document.querySelectorAll("[data-gasto]").forEach(function(inp) {
+    inp.oninput = function() {
+      var key = inp.getAttribute("data-gasto");
+      window.CZState.gastos[key] = parseFloat(inp.value) || 0;
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Inputs de deuda
+  document.querySelectorAll("[data-deuda-field]").forEach(function(inp) {
+    inp.oninput = inp.onchange = function() {
+      var idx = parseInt(inp.getAttribute("data-deuda-idx"), 10);
+      var field = inp.getAttribute("data-deuda-field");
+      if (!window.CZState.deudas[idx]) return;
+      window.CZState.deudas[idx][field] = inp.value;
+      actualizarMetrics();
+      window.guardarLocal();
+    };
+  });
+
+  // Quitar deuda en carga inicial
+  document.querySelectorAll("[data-remove-deuda]").forEach(function(btn) {
+    btn.onclick = function() {
+      var idx = parseInt(btn.getAttribute("data-remove-deuda"), 10);
+      window.CZState.deudas.splice(idx, 1);
+      renderAll();
+      window.guardarLocal();
+    };
+  });
+
+  // Editar deuda en dashboard
+  document.querySelectorAll("[data-editar-deuda]").forEach(function(inp) {
+    inp.oninput = function() {
+      var idx = parseInt(inp.getAttribute("data-editar-deuda"), 10);
+      if (!window.CZState.deudas[idx]) return;
+      window.CZState.deudas[idx].monto = inp.value;
+      window.CZState.diag = calcularMotor();
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Cancelar deuda en dashboard
+  document.querySelectorAll("[data-cancelar-deuda]").forEach(function(btn) {
+    btn.onclick = function() {
+      var idx = parseInt(btn.getAttribute("data-cancelar-deuda"), 10);
+      if (!window.CZState.deudas[idx]) return;
+      window.CZState.deudas[idx].monto = 0;
+      window.CZState.deudas[idx].cancelada = true;
+      window.CZState.diag = calcularMotor();
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Botones evaluacion inicial
+  var btnEval = document.getElementById("btn-ver-evaluacion");
+  if (btnEval) btnEval.onclick = mostrarEvaluacion;
+
+  var btnPlan = document.getElementById("btn-ver-plan-personalizado");
+  if (btnPlan) btnPlan.onclick = next;
+
+  var btnProf = document.getElementById("btn-analisis-profundo");
+  if (btnProf) btnProf.onclick = next;
+
+  // Botones Reset Plus
+  ["btn-conocer-plus", "btn-conocer-plus-ia", "btn-conocer-plus-tab"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.onclick = abrirModalPremium;
+  });
+
+  // Herramientas: compromisos
+  document.querySelectorAll("[data-toggle-compromiso]").forEach(function(el) {
+    el.onclick = function() {
+      var id = el.getAttribute("data-toggle-compromiso");
+      window.CZState.herr.compromisos = window.CZState.herr.compromisos || {};
+      window.CZState.herr.compromisos[id] = !window.CZState.herr.compromisos[id];
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Plan 1: ingreso formal
+  var ingFormal = document.getElementById("ing-formal");
+  if (ingFormal) {
+    ingFormal.oninput = function() {
+      var h = window.CZState.herr;
+      h.ingresos = h.ingresos || { formal: 0, extras: [], total: 0 };
+      h.ingresos.formal = parseFloat(ingFormal.value) || 0;
+      var extras = h.ingresos.extras || [];
+      h.ingresos.total = h.ingresos.formal + extras.reduce(function(s, e) { return s + (parseFloat(e.monto) || 0); }, 0);
+      window.guardarLocal();
+      renderAll();
+    };
+  }
+
+  var btnExtra = document.getElementById("btn-agregar-ing-extra");
+  if (btnExtra) {
+    btnExtra.onclick = function() {
+      var h = window.CZState.herr;
+      h.ingresos = h.ingresos || { formal: PRE.ingreso, extras: [], total: PRE.ingreso };
+      h.ingresos.extras = h.ingresos.extras || [];
+      h.ingresos.extras.push({ tipo: "", monto: "" });
+      window.guardarLocal();
+      renderAll();
+    };
+  }
+
+  document.querySelectorAll("[data-ing-extra-idx]").forEach(function(el) {
+    el.oninput = el.onchange = function() {
+      var idx = parseInt(el.getAttribute("data-ing-extra-idx"), 10);
+      var field = el.getAttribute("data-ing-extra-field");
+      var h = window.CZState.herr;
+      h.ingresos = h.ingresos || { formal: PRE.ingreso, extras: [], total: PRE.ingreso };
+      h.ingresos.extras = h.ingresos.extras || [];
+      if (!h.ingresos.extras[idx]) return;
+      h.ingresos.extras[idx][field] = el.value;
+      h.ingresos.total = (parseFloat(h.ingresos.formal) || PRE.ingreso || 0) + h.ingresos.extras.reduce(function(s, e) { return s + (parseFloat(e.monto) || 0); }, 0);
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  document.querySelectorAll("[data-quitar-ing-extra]").forEach(function(btn) {
+    btn.onclick = function() {
+      var idx = parseInt(btn.getAttribute("data-quitar-ing-extra"), 10);
+      var h = window.CZState.herr;
+      if (h.ingresos && h.ingresos.extras) h.ingresos.extras.splice(idx, 1);
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Clasificacion gastos
+  document.querySelectorAll("[data-cls-gasto]").forEach(function(btn) {
+    btn.onclick = function() {
+      var k = btn.getAttribute("data-cls-gasto");
+      var tipo = btn.getAttribute("data-cls-tipo");
+      window.CZState.herr.gastos_cls = window.CZState.herr.gastos_cls || {};
+      window.CZState.herr.gastos_cls[k] = tipo;
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Gestion acreedores
+  document.querySelectorAll("[data-gestion-key]").forEach(function(sel) {
+    sel.onchange = function() {
+      var k = sel.getAttribute("data-gestion-key");
+      window.CZState.herr.gestiones = window.CZState.herr.gestiones || {};
+      window.CZState.herr.gestiones[k] = { resultado: sel.value };
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Vencimientos
+  document.querySelectorAll("[data-venc-key]").forEach(function(inp) {
+    inp.onchange = function() {
+      var k = inp.getAttribute("data-venc-key");
+      window.CZState.herr.vencimientos = window.CZState.herr.vencimientos || {};
+      window.CZState.herr.vencimientos[k] = inp.value;
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Semaforo
+  document.querySelectorAll("[data-sem-id]").forEach(function(btn) {
+    btn.onclick = function() {
+      var id = btn.getAttribute("data-sem-id");
+      var val = btn.getAttribute("data-sem-val") === "true";
+      window.CZState.herr.semaforo = window.CZState.herr.semaforo || {};
+      window.CZState.herr.semaforo[id] = val;
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Slider gastos plan 4
+  document.querySelectorAll("input[type='range'][data-cat]").forEach(function(slider) {
+    slider.oninput = function() {
+      var total = 0;
+      document.querySelectorAll("input[type='range'][data-cat]").forEach(function(s) {
+        var cat = s.getAttribute("data-cat");
+        var original = parseFloat((window.CZState.gastos || {})[cat]) || 0;
+        var nuevo = parseFloat(s.value) || 0;
+        total += Math.max(0, original - nuevo);
+        var lbl = document.getElementById("lv-" + cat);
+        if (lbl) lbl.textContent = fmt(nuevo);
+      });
+      var totalEl = document.getElementById("total-liberado");
+      if (totalEl) totalEl.textContent = fmt(total);
+    };
+  });
+
+  // Habitos
+  document.querySelectorAll("[data-toggle-habito]").forEach(function(el) {
+    el.onclick = function() {
+      var f = el.getAttribute("data-toggle-habito");
+      window.CZState.herr.habitos = window.CZState.herr.habitos || {};
+      window.CZState.herr.habitos[f] = !window.CZState.herr.habitos[f];
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+
+  // Atrasos
+  document.querySelectorAll("[data-atraso-key]").forEach(function(sel) {
+    sel.onchange = function() {
+      var k = sel.getAttribute("data-atraso-key");
+      window.CZState.herr.atrasos = window.CZState.herr.atrasos || {};
+      window.CZState.herr.atrasos[k] = sel.value;
+      window.guardarLocal();
+      renderAll();
+    };
+  });
+}
+
+// Namespace unico — app.js llama window.CredizonaUI.X()
+window.CredizonaUI = {
+  renderAll:          renderAll,
+  renderTab:          renderTab,
+  renderDeudaCard:    renderDeudaCard,
+  actualizarMetrics:  actualizarMetrics,
+  bindTabEvents:      bindTabEvents,
+  abrirModalPremium:  abrirModalPremium,
+  mostrarEvaluacion:  mostrarEvaluacion,
+};

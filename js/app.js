@@ -66,14 +66,14 @@ function next() {
   if (st.step === 0 && SEGMENTO === 1) {
     st.step = 1;
     track("click_continue_analysis");
-    renderAll();
+    window.CredizonaUI.renderAll();
     return;
   }
   if (st.step === 0 || st.step === 1) {
     var total = Object.values(st.gastos).reduce(function(s, v) { return s + (parseFloat(v) || 0); }, 0);
     if (total === 0) { alert("Completa al menos un gasto para continuar."); return; }
     st.step = 2;
-    renderAll();
+    window.CredizonaUI.renderAll();
     return;
   }
   if (st.step === 2) {
@@ -91,13 +91,13 @@ function next() {
     enviarCRM("reset_plan_generated", st.diag);
     st.step = 3;
     st.tab  = "plan";
-    renderAll();
+    window.CredizonaUI.renderAll();
   }
 }
 
 function prev() {
   var st = window.CZState;
-  if (st.step > 0 && st.step < 3) { st.step--; renderAll(); }
+  if (st.step > 0 && st.step < 3) { st.step--; window.CredizonaUI.renderAll(); }
 }
 
 function resetear() {
@@ -108,7 +108,7 @@ function resetear() {
     herr: { ingresos: { formal: 0, extras: [], total: 0 }, gastos_cls: {}, gestiones: {}, compromisos: {}, semaforo: {}, habitos: {}, atrasos: {}, vencimientos: {} },
   };
   document.getElementById("modal-nuevo").classList.add("hidden");
-  renderAll();
+  window.CredizonaUI.renderAll();
 }
 
 // =============================================================================
@@ -119,7 +119,7 @@ function switchTab(id) {
   document.querySelectorAll(".tab-btn").forEach(function(b) {
     b.classList.toggle("active", b.getAttribute("data-tab") === id);
   });
-  renderTab();
+  window.CredizonaUI.renderTab();
   window.guardarLocal();
 }
 
@@ -141,7 +141,7 @@ function init() {
     st.iaRes      = sesion.iaRes      || null;
     if (sesion.herr) st.herr = sesion.herr;
   }
-  renderAll();
+  window.CredizonaUI.renderAll();
   track("reset_started", { segmento: SEGMENTO });
 }
 
@@ -154,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Sticky CTA
   document.getElementById("sticky-cta").addEventListener("click", function() {
     var step = window.CZState.step;
-    if (step === 3) { abrirModalPremium(); } else { next(); }
+    if (step === 3) { window.CredizonaUI.abrirModalPremium(); } else { next(); }
   });
 
   // Boton Nuevo (header)
@@ -177,21 +177,21 @@ document.addEventListener("DOMContentLoaded", function() {
     if (tabBtn) {
       var id     = tabBtn.getAttribute("data-tab");
       var locked = tabBtn.classList.contains("locked");
-      if (locked) { abrirModalPremium(); return; }
+      if (locked) { window.CredizonaUI.abrirModalPremium(); return; }
       if (id) switchTab(id);
     }
 
     // Back buttons
-    if (e.target.id === "btn-back-diag")   { window.CZState.step = 0; renderAll(); return; }
+    if (e.target.id === "btn-back-diag")   { window.CZState.step = 0; window.CredizonaUI.renderAll(); return; }
     if (e.target.id === "btn-back-gastos") { prev(); return; }
 
     // Agregar deuda
     if (e.target.id === "btn-agregar-deuda") {
       window.CZState.deudas.push({ tipo: "", acreedor: "", monto: "", pago: "" });
       var cont = document.getElementById("deudas-container");
-      if (cont) cont.innerHTML = window.CZState.deudas.map(renderDeudaCard).join("");
-      actualizarMetrics();
-      bindTabEvents();
+      if (cont) cont.innerHTML = window.CZState.deudas.map(window.CredizonaUI.renderDeudaCard).join("");
+      window.CredizonaUI.actualizarMetrics();
+      window.CredizonaUI.bindTabEvents();
       track("add_debt");
       return;
     }
