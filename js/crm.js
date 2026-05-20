@@ -22,7 +22,7 @@ function buildCRMData(motor) {
       nivel:             motor && motor.enc ? motor.enc.nivel : null,
       b_plus:            motor && motor.enc ? motor.enc.bPlus : null,
       flags:             motor && motor.enc ? motor.enc.flagsRiesgo : [],
-      version_algoritmo: "reset_v2_simple",
+      version_algoritmo: ALGORITHM_VERSION,
     },
     expenses: st.gastos || {},
     debts: (st.deudas || []).map(function(d) {

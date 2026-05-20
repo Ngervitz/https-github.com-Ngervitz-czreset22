@@ -3,15 +3,17 @@
 // No depende de ningun otro archivo JS.
 // =============================================================================
 
-const ALGORITHM_VERSION = "reset_v3_dark";
-const STORAGE_KEY       = "cr_v3";
+const PRODUCT_NAME    = "Mi Plan";
+const REPORT_NAME     = "Informe Completo";
+const ALGORITHM_VERSION = "miplan_v1";
+const STORAGE_KEY       = "cz_miplan_v1";
 const API_TOKEN         = "REEMPLAZAR_CON_TOKEN_REAL"; // TODO IT
 
 const API = {
-  guardar:  "https://api.credizona.com.uy/api/reset/guardar",   // TODO IT
-  clearing: "https://api.credizona.com.uy/api/reset/clearing",  // TODO IT
-  pago:     "https://api.credizona.com.uy/api/reset/pago",      // TODO IT
-  ia:       "https://api.credizona.com.uy/api/reset/ia",        // TODO IT
+  guardar:  "https://api.credizona.com.uy/api/miplan/guardar",   // TODO IT
+  clearing: "https://api.credizona.com.uy/api/miplan/clearing",  // TODO IT
+  pago:     "https://api.credizona.com.uy/api/miplan/pago",      // TODO IT
+  ia:       "https://api.credizona.com.uy/api/miplan/ia",        // TODO IT
 };
 
 const SITUACION_LABELS = {
