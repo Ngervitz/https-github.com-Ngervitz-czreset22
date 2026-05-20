@@ -16,7 +16,7 @@ function calcularEncuesta(resp) {
       nivel: "B",
       bPlus: false,
       flagsRiesgo: [],
-      version: "miplan_v1",
+      version: "reset_v2_simple",
     };
   }
 
@@ -50,6 +50,6 @@ function calcularEncuesta(resp) {
     nivelBase: nivel,
     bPlus,
     flagsRiesgo: flags,
-    version: "miplan_v1",
+    version: "reset_v2_simple",
   };
 }
