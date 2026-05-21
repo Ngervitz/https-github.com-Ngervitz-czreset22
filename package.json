@@ -1,0 +1,9 @@
+{
+  "name": "credizona-mi-plan",
+  "version": "1.0.0",
+  "description": "Funnel de diagnostico financiero",
+  "scripts": {
+    "dev": "npx serve -l 3000",
+    "start": "npx serve -l 3000"
+  }
+}
