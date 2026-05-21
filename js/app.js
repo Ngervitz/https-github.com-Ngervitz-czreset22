@@ -1132,6 +1132,7 @@ function renderTabProgreso(){
     +'<div class="progress-wrap" style="margin-top:18px;"><div class="progress-bar" style="width:'+progreso+'%;background:'+(progreso>50?'#34ffaf':progreso>20?'#ffd36f':'#ff4e72')+';"></div></div>'
     +'</div>'
     +renderHorizontes()
+    +renderFooter()
     +'</div>';
 }
 

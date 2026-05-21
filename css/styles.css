@@ -474,26 +474,199 @@ select option{background:#0a1026;}
 .celebrate{animation:celebrate .5s ease both;}
 
 @media(max-width:768px){
-  .container{padding:16px;}
-  .brand{font-size:28px;}
-  .hero,.card{padding:24px;border-radius:26px;}
-  h1{font-size:52px;letter-spacing:-2px;}
-  .lead{font-size:22px;}
-  .sub{font-size:17px;}
-  .btn{height:70px;font-size:22px;}
-  .card-title{font-size:44px;}
-  .signal-title{font-size:22px;}
-  .signal-text{font-size:18px;}
-  .good-news{font-size:19px;}
-  .step-title{font-size:26px;}
-  .step-text{font-size:19px;}
-  .section-title{font-size:38px;}
-  .grid,.metrics,.pricing-grid,.referral-benefits{grid-template-columns:1fr;}
-  .badges-grid{grid-template-columns:repeat(2,1fr);}
-  .metric strong{font-size:34px;}
-  .score-big{font-size:56px;}
-  .plan-title-big{font-size:34px;}
-  .referral-actions{flex-direction:column;}
+  .container{padding:14px;}
+  
+  /* Header */
+  .header{gap:10px;margin-bottom:24px;flex-wrap:wrap;}
+  .logo{width:40px;height:40px;border-radius:12px;font-size:20px;}
+  .brand{font-size:22px;letter-spacing:-1px;}
+  .header-badges{gap:4px;}
+  .header-badge{width:24px;height:24px;font-size:12px;}
+  .header-actions{width:100%;justify-content:flex-end;margin-top:8px;}
+  
+  /* Hero y Cards */
+  .hero,.card{padding:18px;border-radius:20px;margin-bottom:16px;}
+  h1{font-size:32px;letter-spacing:-1px;margin-bottom:16px;}
+  .lead{font-size:18px;margin-bottom:14px;}
+  .sub{font-size:15px;margin-bottom:20px;}
+  .card-title{font-size:28px;letter-spacing:-1px;margin-bottom:16px;}
+  
+  /* Botones */
+  .btn{height:56px;font-size:18px;border-radius:16px;}
+  .btn-small{height:48px;font-size:16px;}
+  .btn-wrap{gap:12px;}
+  
+  /* Signals */
+  .signal{padding:16px;border-radius:16px;gap:12px;}
+  .signal-icon{font-size:18px;}
+  .signal-title{font-size:18px;margin-bottom:4px;}
+  .signal-text{font-size:16px;}
+  .good-news{padding:16px;border-radius:16px;font-size:16px;}
+  .good-news strong{font-size:17px;}
+  
+  /* Steps */
+  .steps{gap:12px;margin-bottom:20px;}
+  .step{padding:18px;border-radius:18px;}
+  .step-num{font-size:36px;margin-bottom:8px;}
+  .step-title{font-size:20px;margin-bottom:6px;}
+  .step-text{font-size:16px;}
+  
+  /* Sections */
+  .section-title{font-size:26px;letter-spacing:-1px;margin-bottom:12px;}
+  .section-text{font-size:16px;margin-bottom:18px;}
+  
+  /* Forms */
+  .field{margin-bottom:14px;}
+  label{font-size:12px;margin-bottom:6px;}
+  input[type=number],input[type=text],input[type=tel],input[type=email],input[type=date],select{
+    height:52px;font-size:16px;border-radius:12px;padding:0 14px;
+  }
+  .grid{gap:12px;}
+  .field-hint{font-size:12px;}
+  
+  /* Accordion */
+  .accordion-item{border-radius:14px;margin-bottom:10px;}
+  .accordion-trigger{padding:16px 18px;font-size:16px;}
+  .accordion-body{padding:16px 18px;}
+  
+  /* Debt cards */
+  .debt-card{padding:16px;border-radius:16px;margin-bottom:14px;}
+  .debt-name{font-size:15px;}
+  .remove-btn{width:36px;height:36px;border-radius:10px;font-size:16px;}
+  .micro-insight{padding:12px 14px;font-size:14px;border-radius:10px;}
+  
+  /* Metrics */
+  .metrics{gap:12px;margin-top:16px;}
+  .metric{padding:16px;border-radius:16px;}
+  .metric small{font-size:12px;margin-bottom:8px;}
+  .metric strong{font-size:28px;}
+  
+  /* Results */
+  .result{padding:18px;border-radius:18px;margin-top:16px;}
+  .result h3{font-size:24px;margin-bottom:12px;}
+  .result p{font-size:16px;}
+  
+  /* Tabs */
+  .tabs{margin-bottom:14px;gap:0;-webkit-overflow-scrolling:touch;}
+  .tab-btn{padding:10px 10px;font-size:11px;gap:4px;}
+  .tab-btn .icon{font-size:14px;}
+  
+  /* Plan */
+  .plan-card{padding:18px;border-radius:18px;margin-bottom:14px;}
+  .plan-badge{font-size:11px;padding:5px 12px;}
+  .plan-title-big{font-size:26px;letter-spacing:-1px;margin-bottom:12px;}
+  .plan-desc{font-size:16px;margin-bottom:16px;}
+  
+  /* Score */
+  .score-display{gap:16px;padding:16px;border-radius:16px;margin-bottom:14px;}
+  .score-circle{width:60px;height:60px;}
+  .score-big{font-size:48px;}
+  .score-label{font-size:12px;}
+  .score-sub{font-size:15px;}
+  .score-message{font-size:13px;}
+  
+  /* Priority */
+  .priority-card{padding:16px;border-radius:16px;}
+  
+  /* Progress section */
+  .progress-section{padding:14px;border-radius:14px;margin-bottom:18px;}
+  .progress-label,.progress-percent{font-size:13px;}
+  .progress-message{font-size:13px;margin-top:8px;}
+  
+  /* Prioridades */
+  .prioridad-item{padding:14px 16px;border-radius:14px;gap:12px;margin-bottom:8px;}
+  .prioridad-num{width:26px;height:26px;font-size:12px;}
+  .prioridad-text{font-size:15px;}
+  
+  /* Tools */
+  .tool-card{padding:16px;border-radius:16px;margin-bottom:12px;}
+  .tool-header{gap:12px;margin-bottom:12px;}
+  .tool-num{width:28px;height:28px;font-size:12px;}
+  .tool-title{font-size:18px;margin-bottom:2px;}
+  .tool-desc{font-size:14px;}
+  
+  /* Compromisos */
+  .compromiso-item{gap:12px;padding:14px 0;}
+  .compromiso-check{width:22px;height:22px;border-radius:6px;font-size:12px;}
+  .compromiso-text{font-size:15px;}
+  
+  /* Locked */
+  .locked-gate{padding:20px;border-radius:20px;}
+  .locked-icon{font-size:32px;margin-bottom:10px;}
+  .locked-title{font-size:22px;margin-bottom:8px;}
+  .locked-text{font-size:15px;margin-bottom:16px;}
+  
+  /* Premium */
+  .premium-card{padding:20px;border-radius:20px;margin-top:20px;}
+  .premium-badge{font-size:12px;margin-bottom:10px;}
+  .premium-title{font-size:26px;margin-bottom:10px;}
+  .premium-text{font-size:16px;margin-bottom:16px;}
+  .premium-benefits li{font-size:15px;padding:8px 0;gap:10px;}
+  
+  /* Upsell */
+  .upsell-banner{padding:18px;border-radius:18px;margin:14px 0;}
+  .upsell-banner-header{gap:10px;margin-bottom:10px;}
+  .upsell-banner-icon{font-size:22px;}
+  .upsell-banner-title{font-size:17px;}
+  .upsell-banner-text{font-size:15px;margin-bottom:14px;}
+  
+  /* Pricing */
+  .pricing-grid{grid-template-columns:1fr;gap:12px;margin-bottom:14px;}
+  .pricing-card{padding:18px;border-radius:18px;}
+  .price-amount{font-size:32px;}
+  .price-label{font-size:12px;margin-bottom:8px;}
+  .price-desc{font-size:14px;}
+  
+  /* Referral */
+  .referral-card{padding:18px;border-radius:18px;margin:18px 0;}
+  .referral-header{gap:10px;margin-bottom:12px;}
+  .referral-icon{font-size:26px;}
+  .referral-title{font-size:18px;}
+  .referral-text{font-size:15px;margin-bottom:14px;}
+  .referral-code{padding:14px;border-radius:12px;margin-bottom:14px;}
+  .referral-code-label{font-size:12px;}
+  .referral-code-value{font-size:20px;}
+  .referral-benefits{grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+  .referral-benefit{padding:12px;border-radius:10px;}
+  .referral-benefit-value{font-size:20px;}
+  .referral-benefit-label{font-size:12px;}
+  .referral-actions{flex-direction:column;gap:8px;}
+  .referral-actions .btn{height:48px;font-size:15px;}
+  
+  /* Badges section */
+  .badges-section{padding:18px;border-radius:18px;margin:18px 0;}
+  .badges-title{font-size:17px;margin-bottom:14px;}
+  .badges-grid{grid-template-columns:repeat(3,1fr);gap:10px;}
+  .badge-item{padding:12px 8px;border-radius:12px;}
+  .badge-icon{font-size:24px;margin-bottom:6px;}
+  .badge-name{font-size:11px;}
+  .badge-desc{font-size:10px;}
+  
+  /* Modal */
+  .modal-box{padding:24px 18px 40px;border-radius:24px 24px 0 0;}
+  
+  /* Sticky */
+  .sticky-bar{padding:12px 14px;}
+  .sticky-inner{gap:12px;}
+  .sticky-lbl{font-size:12px;}
+  .sticky-step{font-size:14px;}
+  .sticky-btn{height:48px;padding:0 20px;font-size:15px;border-radius:12px;}
+  
+  /* Footer */
+  .footer{padding:30px 16px 90px;}
+  .footer strong{font-size:20px;}
+  
+  /* Nav back */
+  .nav-back{padding:8px 14px;font-size:14px;border-radius:10px;margin-bottom:16px;}
+  
+  /* Step pills */
+  .step-pills{gap:8px;margin-bottom:20px;}
+  .pill-num{width:24px;height:24px;font-size:11px;}
+  .pill-label{font-size:12px;}
+  .pill-div{width:16px;}
+  
+  /* Savings badge */
+  .savings-badge{font-size:12px;padding:3px 10px;}
 }
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
