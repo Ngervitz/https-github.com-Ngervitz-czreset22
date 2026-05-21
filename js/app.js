@@ -369,11 +369,15 @@ function next() {
   if(step===0){
     const total=Object.values(gastos).reduce((s,v)=>s+(parseFloat(v)||0),0);
     if(total===0){alert("Completa al menos un gasto para continuar.");return;}
+    // Badge: Primer Paso
+    if(typeof BadgeSystem !== 'undefined') BadgeSystem.checkAndUnlock('personal_complete');
     step=2;render();return;
   }
   if(step===1){
     const total=Object.values(gastos).reduce((s,v)=>s+(parseFloat(v)||0),0);
     if(total===0){alert("Completa al menos un gasto para continuar.");return;}
+    // Badge: Claridad
+    if(typeof BadgeSystem !== 'undefined') BadgeSystem.checkAndUnlock('gastos_complete');
     step=2;render();return;
   }
   if(step===2){
@@ -382,6 +386,31 @@ function next() {
     saldoInicial=deudas.reduce((s,d)=>s+(parseFloat(d.monto)||0),0);
     snapshot={fecha_inicio:new Date().toISOString(),score_reset:diag.scoreReset,nivel:diag.nivelR,plan_id:diag.planId,saldo_inicial:saldoInicial};
     guardarLocal();track("plan_generated",{score:diag.scoreReset,nivel:diag.nivelR,causa_principal:diag.causaPrincipal,plan_tipo:diag.plan.titulo,deuda_prioritaria_tipo:diag.prio?.tipo||null,deuda_prioritaria_acreedor:diag.prio?.acreedor||null,flujo_libre:diag.fin.flujoLibre,capacidad_segura_ataque:diag.capacidadSeguraAtaque});enviarCRM("plan_generated",diag);
+    
+    // Badge: Diagnosticado
+    if(typeof BadgeSystem !== 'undefined') BadgeSystem.checkAndUnlock('diagnostico_complete');
+    
+    // WhatsApp Queue: Actualizar datos del usuario
+    if(typeof WhatsAppQueue !== 'undefined') {
+      WhatsAppQueue.updateUserData({
+        nombre: PRE.nombre,
+        telefono: PRE.telefono,
+        score: diag.scoreReset,
+        planAsignado: diag.planId,
+        deudaTotal: saldoInicial
+      });
+      WhatsAppQueue.trackEvent('diagnostico_complete', { score: diag.scoreReset, planId: diag.planId });
+    }
+    
+    // Trigger upsell post-diagnostico (con delay)
+    setTimeout(() => {
+      if(typeof UpsellSystem !== 'undefined') {
+        UpsellSystem.triggerPostDiagnostico();
+        // Si score bajo, trigger adicional
+        if(diag.scoreReset < 40) UpsellSystem.triggerScoreBajo(diag.scoreReset);
+      }
+    }, 2000);
+    
     step=3;activeTab="situacion";render();return;
   }
 }
@@ -391,6 +420,11 @@ function resetear(){
   step=0;gastos={};deudas=[];diag=null;saldoInicial=0;snapshot=null;
   activeTab="situacion";resetPlusEstado="sin_pago";iaResultado=null;
   herramientas={ingresos:{formal:0,extras:[],total:0},gastos_clasificados:{},gestiones:{},compromisos:{},semaforo:{},habitos:{},atrasos:{},vencimientos:{}};
+  // Reset sistemas de gamificacion
+  if(typeof BadgeSystem !== 'undefined') BadgeSystem.reset();
+  if(typeof ProgressSystem !== 'undefined') ProgressSystem.reset();
+  if(typeof UpsellSystem !== 'undefined') UpsellSystem.reset();
+  if(typeof WhatsAppQueue !== 'undefined') WhatsAppQueue.reset();
   cerrarModal("modal-nuevo");render();
 }
 function confirmarNuevo(){abrirModal("modal-nuevo");}
@@ -411,7 +445,29 @@ function render() {
   main.innerHTML='<div class="fade">'+html+"</div>";
   if(step===3)bindDashboard();
   updateSticky();
+  updateProgress();
   window.scrollTo({top:0,behavior:"smooth"});
+  
+  // Track funnel step para WhatsApp queue
+  if(typeof WhatsAppQueue !== 'undefined') {
+    WhatsAppQueue.updateUserData({ currentStep: step });
+    WhatsAppQueue.trackEvent('funnel_step_complete', { step });
+  }
+}
+
+function updateProgress() {
+  // Actualizar barra de progreso general
+  if(typeof ProgressSystem !== 'undefined') {
+    if(step >= 1) ProgressSystem.complete('personal');
+    if(step >= 2) ProgressSystem.complete('gastos');
+    if(step >= 3 && deudas.length > 0) ProgressSystem.complete('deudas');
+    if(step >= 3 && diag) ProgressSystem.complete('diagnostico');
+    ProgressSystem.update();
+    
+    // Mostrar/ocultar segun paso
+    if(step > 0) ProgressSystem.show();
+    else ProgressSystem.hide();
+  }
 }
 
 function updateHeader() {
@@ -650,7 +706,15 @@ function getMicroInsight(tipo){
 
 function updateDeuda(i,k,v){if(deudas[i])deudas[i][k]=v;}
 function rerenderDeuda(i){const c=document.getElementById("debt-card-"+i);if(c)c.outerHTML=renderDeudaCard(deudas[i],i);}
-function agregarDeuda(){deudas.push({tipo:"",acreedor:"",monto:"",pago:""});const c=document.getElementById("deudas-container");if(c)c.innerHTML=deudas.map((d,i)=>renderDeudaCard(d,i)).join("");track("debt_added",{debt_count:deudas.length});}
+function agregarDeuda(){
+  const isFirst = deudas.length === 0;
+  deudas.push({tipo:"",acreedor:"",monto:"",pago:""});
+  const c=document.getElementById("deudas-container");
+  if(c)c.innerHTML=deudas.map((d,i)=>renderDeudaCard(d,i)).join("");
+  track("debt_added",{debt_count:deudas.length});
+  // Badge: Valiente (primera deuda)
+  if(isFirst && typeof BadgeSystem !== 'undefined') BadgeSystem.checkAndUnlock('primera_deuda');
+}
 function eliminarDeuda(i){if(deudas.length>0){deudas.splice(i,1);const c=document.getElementById("deudas-container");if(c)c.innerHTML=deudas.map((d,i)=>renderDeudaCard(d,i)).join("");actualizarMetrics();}}
 function actualizarMetrics(){
   const m=document.getElementById("metrics-live");
@@ -1147,6 +1211,17 @@ function trackHerramienta(evento,datos={}){
   track(evento,{...datos,plan_id:diag?.planId,score:diag?.scoreReset});
   guardarLocal();
   enviarCRM(evento,diag);
+  
+  // Verificar badge de comprometido (3+ herramientas)
+  const completadas = contarCompletadas();
+  if(completadas >= 3 && typeof BadgeSystem !== 'undefined') {
+    BadgeSystem.checkAndUnlock('tools_3');
+  }
+  
+  // Marcar progreso del plan
+  if(typeof ProgressSystem !== 'undefined') {
+    ProgressSystem.complete('plan');
+  }
 }
 function contarCompletadas(){
   const pid=diag?.planId;
@@ -1628,7 +1703,19 @@ function seleccionarPlan(tipo){
 // FOOTER
 // =============================================================================
 function renderFooter(){
-  return '<div class="footer"><strong>Credizona Mi Plan</strong>Herramienta de evaluacion financiera para volver a tener oportunidades.</div>';
+  // Agregar seccion de referidos despues del diagnostico
+  let referralHtml = '';
+  if(step === 3 && typeof ReferralSystem !== 'undefined') {
+    referralHtml = ReferralSystem.renderReferralCard();
+  }
+  
+  // Agregar seccion de badges
+  let badgesHtml = '';
+  if(step === 3 && typeof BadgeSystem !== 'undefined') {
+    badgesHtml = BadgeSystem.renderBadgesSection();
+  }
+  
+  return referralHtml + badgesHtml + '<div class="footer"><strong>Credizona Mi Plan</strong>Herramienta de evaluacion financiera para volver a tener oportunidades.</div>';
 }
 
 // =============================================================================
