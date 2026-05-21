@@ -146,8 +146,8 @@ function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
 function colorRiesgo(r){return r==="Critico"?"#ff4e72":r==="Medio"?"#ffd36f":"#34ffaf";}
 function colorScore(s){return s>=21?"#34ffaf":s>=12?"#ffd36f":"#ff4e72";}
 function colorNivel(n){return n==="A"||n==="MANEJABLE"?"#34ffaf":n==="B+"?"#a78bfa":n==="B"||n==="EN PROCESO"?"#ffd36f":"#ff4e72";}
-function nivelTexto(n){return n==="A"?"MANEJABLE":n==="B+"?"MUY BUENO":n==="B"?"EN PROCESO":n==="C"?"REQUIERE ATENCION":n;}
-function nivelCorto(n){return n==="A"?"OK":n==="B+"?"Bueno":n==="B"?"Medio":n==="C"?"Atenc.":n;}
+function nivelTexto(n){return n==="A"?"OK":n==="B+"?"Bueno":n==="B"?"Medio":n==="C"?"Alerta":n;}
+function nivelCorto(n){return n==="A"?"OK":n==="B+"?"Bueno":n==="B"?"Medio":n==="C"?"Alerta":n;}
 function fmtCorto(n){if(n>=1000000)return "$"+Math.round(n/1000000)+"M";if(n>=1000)return "$"+Math.round(n/1000)+"K";return "$"+Math.round(n);}
 
 // =============================================================================
@@ -874,76 +874,65 @@ function renderRadiografia() {
     +'<div style="font-size:11px;font-weight:800;color:#8390b5;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;">Tu radiografia financiera</div>'
 
     // 1. Interes puro mensual
-    +'<div style="background:rgba(255,78,114,.07);border:1px solid rgba(255,78,114,.2);border-radius:18px;padding:20px;margin-bottom:12px;">'
-    +'<div style="font-size:13px;font-weight:800;color:#ff4e72;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">💸 Lo que pagas sin reducir deuda</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
-    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Solo intereses por mes</div>'
-    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#ff4e72;line-height:1;letter-spacing:-1px;">'+fmt(Math.round(r.interesMensualTotal))+'</div>'
-    +'<div style="font-size:12px;color:#8390b5;margin-top:4px;">plata que desaparece</div></div>'
-    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Solo en un ano</div>'
-    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#ffd447;line-height:1;letter-spacing:-1px;">'+fmt(Math.round(r.interesMensualTotal*12))+'</div>'
-    +'<div style="font-size:12px;color:#8390b5;margin-top:4px;">si no cambia nada</div></div>'
+    +'<div style="background:rgba(255,78,114,.07);border:1px solid rgba(255,78,114,.2);border-radius:14px;padding:14px;margin-bottom:10px;">'
+    +'<div style="font-size:11px;font-weight:800;color:#ff4e72;text-transform:uppercase;margin-bottom:8px;">Solo intereses</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    +'<div><div style="font-size:10px;color:#8390b5;">Por mes</div>'
+    +'<div style="font-size:22px;font-weight:900;color:#ff4e72;line-height:1;">'+fmtCorto(Math.round(r.interesMensualTotal))+'</div></div>'
+    +'<div><div style="font-size:10px;color:#8390b5;">En 1 ano</div>'
+    +'<div style="font-size:22px;font-weight:900;color:#ffd447;line-height:1;">'+fmtCorto(Math.round(r.interesMensualTotal*12))+'</div></div>'
     +'</div>'+DISCLAIMER+'</div>'
 
     // 2. Meses para cancelar cada deuda
     +(deudas.some((_,i)=>r.mesesPorDeuda[i]!==null)
-    ?'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;margin-bottom:12px;">'
-    +'<div style="font-size:13px;font-weight:800;color:#ffd447;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">📅 Cuando cancelarias cada deuda</div>'
+    ?'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:10px;">'
+    +'<div style="font-size:11px;font-weight:800;color:#ffd447;text-transform:uppercase;margin-bottom:8px;">Tiempo cancelacion</div>'
     +deudas.map((d,i)=>{
       const meses = r.mesesPorDeuda[i];
       if(meses===null) return "";
       const nombre = d.acreedor||DEBT_TYPES.find(t=>t.v===d.tipo)?.l||"Deuda #"+(i+1);
       const color  = meses>=60?"#ff4e72":meses>=24?"#ffd447":"#34ffaf";
-      const txt    = meses>=999?"Nunca con el pago actual":meses===1?"1 mes":meses+" meses";
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
-        +'<div style="font-size:15px;font-weight:700;">'+nombre+'</div>'
-        +'<div style="font-family:Syne,sans-serif;font-size:20px;font-weight:900;color:'+color+';">'+txt+'</div>'
+      const txt    = meses>=999?"Nunca":meses===1?"1m":meses+"m";
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);">'
+        +'<div style="font-size:12px;font-weight:700;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+nombre+'</div>'
+        +'<div style="font-size:14px;font-weight:900;color:'+color+';">'+txt+'</div>'
         +'</div>';
     }).join("")
     +DISCLAIMER+'</div>':"")
 
     // 3. Ahorro pagando extra
     +(r.ahorroPagandoExtra
-    ?'<div style="background:rgba(52,255,175,.07);border:1px solid rgba(52,255,175,.2);border-radius:18px;padding:20px;margin-bottom:12px;">'
-    +'<div style="font-size:13px;font-weight:800;color:#34ffaf;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">⚡ Si pagas '+fmt(r.ahorroPagandoExtra.extra)+' extra por mes</div>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">'
-    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Te ahorras en intereses</div>'
-    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#34ffaf;line-height:1;letter-spacing:-1px;">'+fmt(Math.round(r.ahorroPagandoExtra.ahorro))+'</div></div>'
-    +'<div><div style="font-size:12px;color:#8390b5;margin-bottom:5px;">Cancelas '+r.ahorroPagandoExtra.mesesMenos+' meses antes</div>'
-    +'<div style="font-family:Syne,sans-serif;font-size:34px;font-weight:900;color:#34ffaf;line-height:1;letter-spacing:-1px;">'+r.ahorroPagandoExtra.mesesCon+' meses</div>'
-    +'<div style="font-size:12px;color:#8390b5;margin-top:4px;">vs '+r.ahorroPagandoExtra.mesesSin+' meses sin el extra</div></div>'
-    +'</div>'
-    +'<div style="margin-top:12px;font-size:14px;color:#8390b5;">Aplicado a tu deuda prioritaria: <strong style="color:rgba(255,255,255,.8);">'+(r.prio?.acreedor||DEBT_TYPES.find(t=>t.v===r.prio?.tipo)?.l||"deuda principal")+'</strong></div>'
-    +DISCLAIMER+'</div>':"")
+    ?'<div style="background:rgba(52,255,175,.07);border:1px solid rgba(52,255,175,.2);border-radius:14px;padding:14px;margin-bottom:10px;">'
+    +'<div style="font-size:11px;font-weight:800;color:#34ffaf;text-transform:uppercase;margin-bottom:8px;">Pagando '+fmtCorto(r.ahorroPagandoExtra.extra)+' extra</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">'
+    +'<div><div style="font-size:10px;color:#8390b5;">Ahorras</div>'
+    +'<div style="font-size:22px;font-weight:900;color:#34ffaf;line-height:1;">'+fmtCorto(Math.round(r.ahorroPagandoExtra.ahorro))+'</div></div>'
+    +'<div><div style="font-size:10px;color:#8390b5;">Tiempo</div>'
+    +'<div style="font-size:22px;font-weight:900;color:#34ffaf;line-height:1;">'+r.ahorroPagandoExtra.mesesCon+'m</div>'
+    +'<div style="font-size:10px;color:#8390b5;">vs '+r.ahorroPagandoExtra.mesesSin+'m</div></div>'
+    +'</div>'+DISCLAIMER+'</div>':"")
 
     // 4. % comprometido del sueldo
-    +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;margin-bottom:12px;">'
-    +'<div style="font-size:13px;font-weight:800;color:#a78bfa;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">📊 De tu sueldo, cuanto ya esta comprometido</div>'
-    +'<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">'
-    +'<div style="font-family:Syne,sans-serif;font-size:52px;font-weight:900;color:'+(r.pctComprometido>85?"#ff4e72":r.pctComprometido>70?"#ffd447":"#34ffaf")+';line-height:1;letter-spacing:-2px;">'+r.pctComprometido+'%</div>'
-    +'<div style="font-size:15px;color:#8390b5;line-height:1.5;">'+(r.pctComprometido>85?"Casi todo tu sueldo ya esta gastado antes de que llegue.":r.pctComprometido>70?"La mayoria de tu sueldo ya tiene destino fijo.":"Tenes un margen razonable para maniobrar.")+'</div>'
+    +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px;margin-bottom:10px;">'
+    +'<div style="font-size:11px;font-weight:800;color:#a78bfa;text-transform:uppercase;margin-bottom:8px;">Sueldo comprometido</div>'
+    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
+    +'<div style="font-size:32px;font-weight:900;color:'+(r.pctComprometido>85?"#ff4e72":r.pctComprometido>70?"#ffd447":"#34ffaf")+';line-height:1;">'+r.pctComprometido+'%</div>'
+    +'<div style="font-size:12px;color:#8390b5;line-height:1.3;">'+(r.pctComprometido>85?"Casi todo gastado":"Margen ok")+'</div>'
     +'</div>'
-    +'<div style="height:14px;background:rgba(255,255,255,.08);border-radius:7px;overflow:hidden;margin-bottom:8px;">'
-    +'<div style="height:100%;border-radius:7px;width:'+r.pctComprometido+'%;background:'+(r.pctComprometido>85?"#ff4e72":r.pctComprometido>70?"#ffd447":"#34ffaf")+';transition:width .6s ease;"></div>'
+    +'<div style="height:10px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden;">'
+    +'<div style="height:100%;border-radius:5px;width:'+r.pctComprometido+'%;background:'+(r.pctComprometido>85?"#ff4e72":r.pctComprometido>70?"#ffd447":"#34ffaf")+';"></div>'
     +'</div>'
-    +'<div style="display:flex;justify-content:space-between;font-size:12px;color:#8390b5;"><span>Comprometido: '+fmt(Math.round(r.comprometido))+'</span><span>Libre: '+fmt(Math.max(0,PRE.ingreso-r.comprometido))+'</span></div>'
     +'</div>'
 
     // 5. Cuando podria calificar
-    +'<div style="background:linear-gradient(135deg,rgba(91,124,255,.12),rgba(61,220,255,.08));border:1px solid rgba(91,124,255,.3);border-radius:18px;padding:20px;">'
-    +'<div style="font-size:13px;font-weight:800;color:#5b7cff;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">🎯 Cuando podrias volver a calificar</div>'
+    +'<div style="background:linear-gradient(135deg,rgba(91,124,255,.12),rgba(61,220,255,.08));border:1px solid rgba(91,124,255,.3);border-radius:14px;padding:14px;">'
+    +'<div style="font-size:11px;font-weight:800;color:#5b7cff;text-transform:uppercase;margin-bottom:6px;">Calificarias en</div>'
     +(r.mesesParaCalificar===1
-    ?'<div style="font-family:Syne,sans-serif;font-size:28px;font-weight:900;color:#34ffaf;margin-bottom:8px;">Muy pronto — menos de 1 mes</div>'
-    +'<div style="font-size:15px;color:#8390b5;line-height:1.6;">Tu perfil esta cerca del umbral de aprobacion. Con algunos ajustes menores podes intentarlo.</div>'
-    :'<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">'
-    +'<div style="font-family:Syne,sans-serif;font-size:52px;font-weight:900;color:#40d7ff;line-height:1;letter-spacing:-2px;">'+r.mesesParaCalificar+'</div>'
-    +'<div style="font-size:20px;font-weight:700;color:#8390b5;">meses</div>'
-    +'</div>'
-    +'<div style="font-size:16px;color:rgba(255,255,255,.8);font-weight:700;margin-bottom:8px;">Aproximadamente '+r.mesCalifica+'</div>'
-    +'<div style="font-size:14px;color:#8390b5;line-height:1.6;">Siguiendo el plan asignado y sin tomar nuevas deudas. Esta es una proyeccion basada en los datos que declaraste.</div>')
-    +'<div style="margin-top:14px;padding:12px 14px;background:rgba(61,220,255,.08);border:1px solid rgba(61,220,255,.15);border-radius:12px;font-size:13px;color:#8390b5;line-height:1.6;">'
-    +'<strong style="color:#40d7ff;">Para confirmar esta proyeccion</strong> necesitas saber exactamente que ve el banco sobre vos. Eso es lo que incluye Informe Completo.'
-    +'</div>'
+    ?'<div style="font-size:18px;font-weight:900;color:#34ffaf;">Muy pronto</div>'
+    :'<div style="display:flex;align-items:baseline;gap:6px;">'
+    +'<div style="font-size:32px;font-weight:900;color:#40d7ff;line-height:1;">'+r.mesesParaCalificar+'</div>'
+    +'<div style="font-size:14px;font-weight:700;color:#8390b5;">meses</div>'
+    +'</div>')
     +'</div>'
 
     +'</div>';
@@ -987,21 +976,21 @@ function renderTabPlan(){
 
     // Plan hero
     +'<div class="plan-card" style="border-color:'+pc+'33;">'
-    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px;">'
-    +'<div>'
-    +'<div class="plan-badge" style="background:'+pc+'20;color:'+pc+';">Plan #'+d.planId+' · '+d.plan.titulo+'</div>'
-    +'<div class="plan-title-big">'+d.plan.icon+' '+d.plan.titulo+'</div>'
-    +'<div class="plan-desc">'+d.plan.problema+'</div>'
+    +'<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;">'
+    +'<div style="flex:1;min-width:0;">'
+    +'<div class="plan-badge" style="background:'+pc+'20;color:'+pc+';font-size:10px;">Plan #'+d.planId+'</div>'
+    +'<div class="plan-title-big" style="font-size:20px;">'+d.plan.icon+' '+d.plan.titulo+'</div>'
+    +'<div class="plan-desc" style="font-size:13px;">'+d.plan.problema+'</div>'
     +'</div>'
     +'<div style="text-align:right;flex-shrink:0;">'
-    +'<div class="score-big" style="color:'+colorScore(d.scoreReset)+';">'+d.scoreReset+'</div>'
-    +'<div style="font-size:14px;color:#8390b5;margin-top:4px;">de 30</div>'
-    +'<div style="font-size:14px;font-weight:800;color:'+colorNivel(d.nivelR)+';margin-top:6px;">'+nivelTexto(d.nivelR)+'</div>'
+    +'<div class="score-big" style="color:'+colorScore(d.scoreReset)+';font-size:36px;">'+d.scoreReset+'</div>'
+    +'<div style="font-size:11px;color:#8390b5;">de 30</div>'
+    +'<div style="font-size:12px;font-weight:800;color:'+colorNivel(d.nivelR)+';margin-top:4px;">'+nivelTexto(d.nivelR)+'</div>'
     +'</div>'
     +'</div>'
-    +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:18px;">'
-    +'<div style="font-size:14px;color:#8390b5;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Objetivo</div>'
-    +'<div style="font-size:19px;color:rgba(255,255,255,.9);line-height:1.6;">'+d.plan.objetivo+'</div>'
+    +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;">'
+    +'<div style="font-size:11px;color:#8390b5;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Objetivo</div>'
+    +'<div style="font-size:14px;color:rgba(255,255,255,.9);line-height:1.5;">'+d.plan.objetivo+'</div>'
     +'</div>'
     +'</div>'
 
@@ -1241,10 +1230,10 @@ function renderHerramientas(){
   const pid=diag.planId;
   const pc=diag.plan.color;
   let html='<div style="margin-top:4px;">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">'
-    +'<div><div style="font-size:20px;font-weight:900;">Herramientas del plan</div><div style="font-size:15px;color:#8390b5;margin-top:2px;">Cada paso que completas nos ayuda a ayudarte mejor</div></div>'
-    +'<div style="text-align:right;"><div style="font-size:44px;font-weight:900;color:'+(completadas===3?pc:"#8390b5")+';line-height:1;letter-spacing:-2px;">'+completadas+'/3</div><div style="font-size:14px;color:#8390b5;">completadas</div></div>'
-    +'</div>'
+  +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">'
+  +'<div><div style="font-size:16px;font-weight:900;">Herramientas</div><div style="font-size:12px;color:#8390b5;margin-top:2px;">Completa para ayudarte</div></div>'
+  +'<div style="text-align:right;"><div style="font-size:32px;font-weight:900;color:'+(completadas===3?pc:"#8390b5")+';line-height:1;">'+completadas+'/3</div><div style="font-size:11px;color:#8390b5;">completadas</div></div>'
+  +'</div>'
     +'<div class="progress-wrap" style="margin-bottom:18px;"><div class="progress-bar" style="width:'+Math.round(completadas/3*100)+'%;background:'+pc+';"></div></div>';
   if(pid===1)html+=renderHerramientasPlan1();
   else if(pid===2)html+=renderHerramientasPlan2();
