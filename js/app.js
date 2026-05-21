@@ -147,6 +147,8 @@ function colorRiesgo(r){return r==="Critico"?"#ff4e72":r==="Medio"?"#ffd36f":"#3
 function colorScore(s){return s>=21?"#34ffaf":s>=12?"#ffd36f":"#ff4e72";}
 function colorNivel(n){return n==="A"||n==="MANEJABLE"?"#34ffaf":n==="B+"?"#a78bfa":n==="B"||n==="EN PROCESO"?"#ffd36f":"#ff4e72";}
 function nivelTexto(n){return n==="A"?"MANEJABLE":n==="B+"?"MUY BUENO":n==="B"?"EN PROCESO":n==="C"?"REQUIERE ATENCION":n;}
+function nivelCorto(n){return n==="A"?"OK":n==="B+"?"Bueno":n==="B"?"Medio":n==="C"?"Atenc.":n;}
+function fmtCorto(n){if(n>=1000000)return "$"+Math.round(n/1000000)+"M";if(n>=1000)return "$"+Math.round(n/1000)+"K";return "$"+Math.round(n);}
 
 // =============================================================================
 // MOTOR — ENCUESTA
@@ -487,7 +489,7 @@ function updateSticky() {
   if(step===0&&SEGMENTO===1){lbl.textContent="Evaluacion inicial";st.textContent="Ver mi evaluacion y continuar";cta.textContent="Ver evaluacion";cta.className="sticky-btn";cta.onclick=next;}
   else if(step===0||step===1){lbl.textContent="Paso "+(SEGMENTO===1?2:1)+" de "+(SEGMENTO===1?3:2);st.textContent="Completa tus gastos mensuales";cta.textContent="Continuar";cta.className="sticky-btn";cta.onclick=next;}
   else if(step===2){lbl.textContent="Ultimo paso";st.textContent="Genera tu diagnostico completo";cta.textContent="Ver mi plan";cta.className="sticky-btn";cta.onclick=next;}
-  else if(step===3){lbl.textContent=diag?.plan?.cta||"Tu plan";st.textContent="Profundizá con Informe Completo";cta.textContent="Informe Completo";cta.className="sticky-btn informe";cta.onclick=abrirModalPremium;}
+  else if(step===3){lbl.textContent=diag?.plan?.cta||"Tu plan";st.textContent="Tu informe completo";cta.textContent="Ver mas";cta.className="sticky-btn informe";cta.onclick=abrirModalPremium;}
 }
 
 // =============================================================================
@@ -960,10 +962,10 @@ function renderTabSituacion(){
     +'<div class="plan-title-big">'+d.causaLabel+'</div>'
     +'<div class="plan-desc">Tu situación no se define por un número. El punto central detectado es: <strong style="color:white;">'+d.causaLabel+'</strong>. Desde ahí armamos el plan.</div>'
     +'<div class="metrics">'
-    +'<div class="metric"><small>Score Mi Plan</small><strong style="color:'+colorScore(d.scoreReset)+';">'+d.scoreReset+'</strong><div style="font-size:14px;color:#8390b5;margin-top:6px;">de 30</div></div>'
-    +'<div class="metric"><small>Nivel</small><strong style="color:'+colorNivel(d.nivelR)+';font-size:30px;">'+nivelTexto(d.nivelR)+'</strong></div>'
-    +'<div class="metric"><small>Flujo libre</small><strong style="color:'+(fin.flujoLibre<0?'#ff4e72':'#34ffaf')+';">'+fmt(fin.flujoLibre)+'</strong></div>'
-    +'<div class="metric"><small>Capacidad segura</small><strong style="color:#40d7ff;">'+fmt(d.capacidadSeguraAtaque)+'</strong><div style="font-size:14px;color:#8390b5;margin-top:6px;">para atacar deuda sin ahogarte</div></div>'
+    +'<div class="metric"><small>Score</small><strong style="color:'+colorScore(d.scoreReset)+';">'+d.scoreReset+'</strong><div style="font-size:12px;color:#8390b5;margin-top:4px;">de 30</div></div>'
+    +'<div class="metric"><small>Nivel</small><strong style="color:'+colorNivel(d.nivelR)+';">'+nivelCorto(d.nivelR)+'</strong></div>'
+    +'<div class="metric"><small>Flujo</small><strong style="color:'+(fin.flujoLibre<0?'#ff4e72':'#34ffaf')+';">'+fmtCorto(fin.flujoLibre)+'</strong></div>'
+    +'<div class="metric"><small>Capacidad</small><strong style="color:#40d7ff;">'+fmtCorto(d.capacidadSeguraAtaque)+'</strong></div>'
     +'</div>'
     +'</div>'
     +(prio?'<div class="priority-card"><div style="font-size:13px;font-weight:800;color:#ff4e72;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">Deuda más sensible</div><div style="font-size:28px;font-weight:900;margin-bottom:10px;">'+(prio.acreedor||DEBT_TYPES.find(t=>t.v===prio.tipo)?.l||'Deuda principal')+'</div><div style="font-size:18px;color:#b3bed8;line-height:1.6;">Por monto, pago mensual, tasa estimada y estado, esta es la deuda que más conviene mirar primero.</div></div>':'')
