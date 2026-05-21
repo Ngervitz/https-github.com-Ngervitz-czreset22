@@ -391,15 +391,3 @@ select option{background:#0a1026;}
 @keyframes shimmer{0%{background-position:-400px 0;}100%{background-position:400px 0;}}
 .fade{animation:fadeUp .3s ease both;}
 .skeleton{background:linear-gradient(90deg,#0f1738 25%,#1a2848 50%,#0f1738 75%);background-size:400px 100%;animation:shimmer 1.4s infinite;border-radius:12px;}
-/* Informe Completo — aliases de branding (reemplaza Premium) */
-.informe-card  { margin-top:28px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.1); border-radius:26px; padding:28px; }
-.informe-badge { color:#40d7ff; text-transform:uppercase; letter-spacing:.1em; font-weight:900; font-size:13px; margin-bottom:14px; }
-.informe-title { font-size:36px; font-weight:900; margin-bottom:14px; }
-.informe-text  { color:#b4c0da; line-height:1.7; font-size:19px; margin-bottom:20px; }
-.precio-grid   { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:18px; }
-.precio-card   { background:rgba(255,255,255,.04); border:2px solid rgba(255,255,255,.1); border-radius:22px; padding:22px; position:relative; cursor:pointer; transition:all .2s; }
-.precio-card:hover { border-color:rgba(64,215,255,.4); }
-.precio-card.featured { border-color:rgba(64,215,255,.5); background:rgba(64,215,255,.06); }
-.ahorro-badge  { display:inline-block; background:rgba(52,255,175,.15); border:1px solid rgba(52,255,175,.3); color:#34ffaf; font-size:14px; font-weight:800; padding:4px 12px; border-radius:20px; margin-bottom:4px; }
-.sticky-btn.informe { background:linear-gradient(90deg,#ffd447,#f59e0b); color:#1a1000; }
-@media(max-width:768px) { .precio-grid { grid-template-columns:1fr; } }
