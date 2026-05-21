@@ -1,7 +1,7 @@
 // =============================================================================
 // CONSTANTS & CONFIG
 // =============================================================================
-const ALGORITHM_VERSION = "reset_v3_dark";
+const ALGORITHM_VERSION = "mi_plan_v4_tracking_printable";
 const STORAGE_KEY = "cr_v3";
 const API = {
   guardar:  "https://api.credizona.com.uy/api/reset/guardar",   // TODO IT
@@ -77,7 +77,7 @@ let deudas = [];
 let diag = null;
 let saldoInicial = 0;
 let snapshot = null;
-let activeTab = "plan";
+let activeTab = "situacion";
 let resetPlusEstado = "sin_pago";
 let iaResultado = null;
 let herramientas = {ingresos:{formal:0,extras:[],total:0},gastos_clasificados:{},gestiones:{},compromisos:{},semaforo:{},habitos:{},atrasos:{},vencimientos:{}};
@@ -102,7 +102,19 @@ function cargarLocal() {
 // TRACKING & CRM
 // =============================================================================
 function track(evento, datos={}) {
-  console.log("[RESET]", evento, datos);
+  const payload = {
+    event: evento,
+    app: "credizona_mi_plan",
+    algorithm_version: ALGORITHM_VERSION,
+    timestamp: new Date().toISOString(),
+    segmento: SEGMENTO,
+    ...datos
+  };
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push(payload);
+
+  console.log("[MI_PLAN]", evento, payload);
 }
 function buildCRMData(motor) {
   return {
@@ -113,8 +125,10 @@ function buildCRMData(motor) {
     debts:deudas.map(d=>({...d,interes_estimado:TASAS[d.tipo]||62,priority_score:calcularPrioridad(d)})),
     diagnosis:motor?{deuda_total:motor.fin.totalDeuda,pago_mensual_total:motor.fin.totalPago,
       interes_promedio:motor.fin.interesProm,nivel_riesgo:motor.fin.nivelRiesgo,
-      score_reset:motor.scoreReset,nivel_reset:motor.nivelR,plan_id:motor.planId}:{},
-    reset_plus:{estado:resetPlusEstado},
+      score_reset:motor.scoreReset,nivel_reset:motor.nivelR,plan_id:motor.planId,
+      causa_principal:motor.causaPrincipal,capacidad_segura_ataque:motor.capacidadSeguraAtaque,
+      horizontes:motor.horizontes,partner_candidate:motor.partnerCandidate}:{},
+    informe_completo:{estado:resetPlusEstado},
     metadata:{algorithm_version:ALGORITHM_VERSION,timestamp:new Date().toISOString(),segmento:SEGMENTO},
   };
 }
@@ -130,7 +144,7 @@ async function enviarCRM(evento, motor) {
 const fmt = n => "$"+Number(n||0).toLocaleString("es-UY",{maximumFractionDigits:0});
 function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
 function colorRiesgo(r){return r==="Critico"?"#ff4e72":r==="Medio"?"#ffd36f":"#34ffaf";}
-function colorScore(s){return s>=70?"#34ffaf":s>=40?"#ffd36f":"#ff4e72";}
+function colorScore(s){return s>=21?"#34ffaf":s>=12?"#ffd36f":"#ff4e72";}
 function colorNivel(n){return n==="A"||n==="MANEJABLE"?"#34ffaf":n==="B+"?"#a78bfa":n==="B"||n==="EN PROCESO"?"#ffd36f":"#ff4e72";}
 function nivelTexto(n){return n==="A"?"MANEJABLE":n==="B+"?"MUY BUENO":n==="B"?"EN PROCESO":n==="C"?"REQUIERE ATENCION":n;}
 
@@ -140,7 +154,7 @@ function nivelTexto(n){return n==="A"?"MANEJABLE":n==="B+"?"MUY BUENO":n==="B"?"
 function p2n(r){return r==="A"?3:r==="B"?2:r==="C"?1:r==="D"?0:null;}
 function calcularEncuesta(resp) {
   // Algoritmo reset_v2_simple — suma directa P1-P10, max 30 pts
-  if(!resp||!TIENE_ENCUESTA) return {score:50,scoreTotal:0,nivel:"B",bPlus:false,flagsRiesgo:[],version:"reset_v2_simple"};
+  if(!resp||!TIENE_ENCUESTA) return {score:15,scoreTotal:0,nivel:"B",bPlus:false,flagsRiesgo:[],version:"reset_v2_simple"};
   const v = k => p2n(resp["p"+k]);
 
   // Suma directa de los 10 items (0-3 cada uno, max 30)
@@ -190,15 +204,16 @@ function calcularFinanciero() {
   if(deudas.length>=5)score-=10;
   if(totalGastos>ingreso*.85)score-=10;
   score=clamp(Math.round(score),0,100);
+  const score30 = clamp(Math.round(score/100*30),0,30);
   let nivelRiesgo="Bajo";
   if(totalPago>50000||interesProm>90)nivelRiesgo="Critico";
   else if(totalPago>25000||interesProm>60)nivelRiesgo="Medio";
-  return {totalGastos,totalDeuda,totalPago,flujoLibre,ratio,interesProm,scoreFinanciero:score,nivelRiesgo,cantMoras:moras,cantInformales:informales};
+  return {totalGastos,totalDeuda,totalPago,flujoLibre,ratio,interesProm,scoreFinanciero:score30,scoreFinanciero100:score,nivelRiesgo,cantMoras:moras,cantInformales:informales};
 }
 
 function calcularPrioridad(d) {
   const est=getEstado(d.estado);
-  return (parseFloat(d.monto)||0)*.15+(parseFloat(d.pago)||0)*.2+(TASAS[d.tipo]||62)*40+(est?est.puntaje*1500:0);
+  return (parseFloat(d.monto)||0)*0.12+(parseFloat(d.pago)||0)*0.30+(TASAS[d.tipo]||62)*35+(est?est.puntaje*2500:0);
 }
 function deudaPrioritaria() {
   if(!deudas.length)return null;
@@ -246,18 +261,87 @@ function asignarPlan(enc, fin) {
   return 1;
 }
 
+function detectarCausaPrincipal(enc, fin) {
+  const r = PRE.respuestas || {};
+  if(fin.flujoLibre < 0) return "flujo_negativo";
+  if(fin.cantMoras > 0) return "mora_activa";
+  if(fin.interesProm >= 85) return "deuda_cara";
+  if(deudas.length >= 5) return "demasiadas_deudas";
+  if(r.p1 === "C" || r.p1 === "D" || r.p7 === "C" || r.p7 === "D") return "falta_organizacion";
+  if(r.p5 === "C" || r.p5 === "D") return "estres_alto";
+  if(r.p8 === "C" || r.p8 === "D") return "sin_accion";
+  return "ordenar_y_sostener";
+}
+
+function labelCausaPrincipal(causa) {
+  const labels = {
+    flujo_negativo: "Te está faltando aire mensual",
+    mora_activa: "La mora está dañando tu perfil",
+    deuda_cara: "Los intereses están comiendo tu plata",
+    demasiadas_deudas: "Tenés demasiados pagos abiertos",
+    falta_organizacion: "Falta claridad para decidir bien",
+    estres_alto: "El estrés financiero está mandando",
+    sin_accion: "Todavía falta pasar a la acción",
+    ordenar_y_sostener: "El foco es sostener buenos hábitos"
+  };
+  return labels[causa] || labels.ordenar_y_sostener;
+}
+
+function calcularHorizontes(fin, planId) {
+  const base = planId === 4 || fin.flujoLibre < 0 ? "emergencia" : planId === 2 ? "deuda" : "orden";
+  if(base === "emergencia") {
+    return {
+      d30: "Frenar nuevas deudas y recuperar control mensual.",
+      d90: "Regularizar atrasos principales y estabilizar pagos mínimos.",
+      d180: "Reperfilar deudas caras y volver a evaluar oportunidades."
+    };
+  }
+  if(base === "deuda") {
+    return {
+      d30: "Elegir la deuda prioritaria y negociar o atacarla primero.",
+      d90: "Bajar presión mensual y reducir intereses evitables.",
+      d180: "Mostrar historial más ordenado y menor carga de deuda."
+    };
+  }
+  return {
+    d30: "Ordenar datos, vencimientos y pagos del mes.",
+    d90: "Sostener pagos en fecha y reducir la deuda más sensible.",
+    d180: "Consolidar hábitos y volver a medir el perfil completo."
+  };
+}
+
+function detectarPartnerCandidate(fin, prio) {
+  if(!prio) return null;
+  const est = getEstado(prio.estado);
+  const tasa = TASAS[prio.tipo] || 62;
+  const consolidable = ["tarjeta","financiera","prestamo","cooperativa","mora"].includes(prio.tipo);
+  if(consolidable && (tasa >= 75 || (est && est.puntaje >= 2) || fin.ratio > 0.35)) {
+    return {
+      eligible: true,
+      reason: "deuda_consolidable_o_refinanciable",
+      possible_partners: ["ChauDeudas", "MiDeuda"],
+      visible_to_user: false
+    };
+  }
+  return { eligible:false, visible_to_user:false };
+}
+
 function calcularMotor() {
   const enc=calcularEncuesta(PRE.respuestas);
   const fin=calcularFinanciero();
-  const scoreReset=clamp(Math.round(fin.scoreFinanciero*.55+enc.score*.45),0,100);
-  let nivelR=scoreReset>=70?"A":scoreReset>=40?"B":"C";
+  const scoreReset=clamp(Math.round(fin.scoreFinanciero*.55+enc.score*.45),0,30);
+  let nivelR=scoreReset>=21?"A":scoreReset>=12?"B":"C";
   const planId=asignarPlan(enc,fin);
   if(planId===4)nivelR="C";
   if(planId===2&&nivelR==="A")nivelR="B";
   const plan=PLANES[planId];
   const prio=deudaPrioritaria();
+  const causaPrincipal=detectarCausaPrincipal(enc,fin);
+  const capacidadSeguraAtaque=Math.max(0,Math.round(fin.flujoLibre-(PRE.ingreso*0.10)));
+  const horizontes=calcularHorizontes(fin,planId);
+  const partnerCandidate=detectarPartnerCandidate(fin,prio);
   const diasRec=snapshot?Math.floor((Date.now()-new Date(snapshot.fecha_inicio).getTime())/86400000):0;
-  return {enc,fin,scoreReset,nivelR,planId,plan,prio,diasRec};
+  return {enc,fin,scoreReset,nivelR,planId,plan,prio,causaPrincipal,causaLabel:labelCausaPrincipal(causaPrincipal),capacidadSeguraAtaque,horizontes,partnerCandidate,diasRec};
 }
 
 // =============================================================================
@@ -268,20 +352,20 @@ function init() {
   if(sesion&&sesion.diag){
     step=3;gastos=sesion.gastos||{};deudas=sesion.deudas||[];
     diag=sesion.diag;saldoInicial=sesion.saldoInicial||0;
-    snapshot=sesion.snapshot||null;activeTab=sesion.activeTab||"plan";
+    snapshot=sesion.snapshot||null;activeTab=["situacion","deudas","plan","progreso","informe"].includes(sesion.activeTab)?sesion.activeTab:"situacion";
     resetPlusEstado=sesion.resetPlusEstado||"sin_pago";
     iaResultado=sesion.iaResultado||null;
     if(sesion.herramientas)herramientas=sesion.herramientas;
   }
   render();
-  track("reset_started",{segmento:SEGMENTO});
+  track("mi_plan_started",{segmento:SEGMENTO});
 }
 
 // =============================================================================
 // NAVIGATION
 // =============================================================================
 function next() {
-  if(step===0&&SEGMENTO===1){step=1;track("click_continue_analysis");render();return;}
+  if(step===0&&SEGMENTO===1){step=1;track("diagnosis_continue_clicked");render();return;}
   if(step===0){
     const total=Object.values(gastos).reduce((s,v)=>s+(parseFloat(v)||0),0);
     if(total===0){alert("Completa al menos un gasto para continuar.");return;}
@@ -297,15 +381,15 @@ function next() {
     diag=calcularMotor();
     saldoInicial=deudas.reduce((s,d)=>s+(parseFloat(d.monto)||0),0);
     snapshot={fecha_inicio:new Date().toISOString(),score_reset:diag.scoreReset,nivel:diag.nivelR,plan_id:diag.planId,saldo_inicial:saldoInicial};
-    guardarLocal();enviarCRM("reset_plan_generated",diag);
-    step=3;activeTab="plan";render();return;
+    guardarLocal();track("plan_generated",{score:diag.scoreReset,nivel:diag.nivelR,causa_principal:diag.causaPrincipal,plan_tipo:diag.plan.titulo,deuda_prioritaria_tipo:diag.prio?.tipo||null,deuda_prioritaria_acreedor:diag.prio?.acreedor||null,flujo_libre:diag.fin.flujoLibre,capacidad_segura_ataque:diag.capacidadSeguraAtaque});enviarCRM("plan_generated",diag);
+    step=3;activeTab="situacion";render();return;
   }
 }
 function prev(){if(step>0&&step<3){step--;render();}}
 function resetear(){
   try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
   step=0;gastos={};deudas=[];diag=null;saldoInicial=0;snapshot=null;
-  activeTab="plan";resetPlusEstado="sin_pago";iaResultado=null;
+  activeTab="situacion";resetPlusEstado="sin_pago";iaResultado=null;
   herramientas={ingresos:{formal:0,extras:[],total:0},gastos_clasificados:{},gestiones:{},compromisos:{},semaforo:{},habitos:{},atrasos:{},vencimientos:{}};
   cerrarModal("modal-nuevo");render();
 }
@@ -347,7 +431,7 @@ function updateSticky() {
   if(step===0&&SEGMENTO===1){lbl.textContent="Evaluacion inicial";st.textContent="Ver mi evaluacion y continuar";cta.textContent="Ver evaluacion";cta.className="sticky-btn";cta.onclick=next;}
   else if(step===0||step===1){lbl.textContent="Paso "+(SEGMENTO===1?2:1)+" de "+(SEGMENTO===1?3:2);st.textContent="Completa tus gastos mensuales";cta.textContent="Continuar";cta.className="sticky-btn";cta.onclick=next;}
   else if(step===2){lbl.textContent="Ultimo paso";st.textContent="Genera tu diagnostico completo";cta.textContent="Ver mi plan";cta.className="sticky-btn";cta.onclick=next;}
-  else if(step===3){lbl.textContent=diag?.plan?.cta||"Tu plan";st.textContent="Profundiza el analisis con Reset Plus";cta.textContent="Reset Plus";cta.className="sticky-btn premium";cta.onclick=abrirModalPremium;}
+  else if(step===3){lbl.textContent=diag?.plan?.cta||"Tu plan";st.textContent="Profundizá con Informe Completo";cta.textContent="Informe Completo";cta.className="sticky-btn informe";cta.onclick=abrirModalPremium;}
 }
 
 // =============================================================================
@@ -414,7 +498,7 @@ function renderDiagInicial() {
 function mostrarEvaluacion() {
   const el=document.getElementById("eval-card");
   if(el){el.classList.remove("hidden");el.scrollIntoView({behavior:"smooth",block:"start"});}
-  track("view_initial_diagnosis",{segmento:SEGMENTO});
+  track("diagnosis_viewed",{segmento:SEGMENTO});
 }
 
 // =============================================================================
@@ -566,7 +650,7 @@ function getMicroInsight(tipo){
 
 function updateDeuda(i,k,v){if(deudas[i])deudas[i][k]=v;}
 function rerenderDeuda(i){const c=document.getElementById("debt-card-"+i);if(c)c.outerHTML=renderDeudaCard(deudas[i],i);}
-function agregarDeuda(){deudas.push({tipo:"",acreedor:"",monto:"",pago:""});const c=document.getElementById("deudas-container");if(c)c.innerHTML=deudas.map((d,i)=>renderDeudaCard(d,i)).join("");track("add_debt");}
+function agregarDeuda(){deudas.push({tipo:"",acreedor:"",monto:"",pago:""});const c=document.getElementById("deudas-container");if(c)c.innerHTML=deudas.map((d,i)=>renderDeudaCard(d,i)).join("");track("debt_added",{debt_count:deudas.length});}
 function eliminarDeuda(i){if(deudas.length>0){deudas.splice(i,1);const c=document.getElementById("deudas-container");if(c)c.innerHTML=deudas.map((d,i)=>renderDeudaCard(d,i)).join("");actualizarMetrics();}}
 function actualizarMetrics(){
   const m=document.getElementById("metrics-live");
@@ -606,12 +690,13 @@ function renderStepPills(cur,total){
 // DASHBOARD
 // =============================================================================
 function renderDashboard(){
-  const isLocked=id=>(id==="ia"||id==="plus")&&resetPlusEstado==="sin_pago";
+  const isLocked=id=>(id==="informe")&&resetPlusEstado==="sin_pago";
   const TABS=[
-    {id:"plan",l:"Mi plan",icon:"🎯"},
+    {id:"situacion",l:"Mi situación",icon:"📊"},
     {id:"deudas",l:"Mis deudas",icon:"✏️"},
-    {id:"ia",l:"Asistente IA",icon:"🤖",locked:isLocked("ia")},
-    {id:"plus",l:"Reset Plus",icon:"⭐",locked:isLocked("plus")},
+    {id:"plan",l:"Mi Plan",icon:"🎯"},
+    {id:"progreso",l:"Mi progreso",icon:"📈"},
+    {id:"informe",l:"Informe completo",icon:"⭐",locked:isLocked("informe")},
   ];
   return '<div class="tabs">'
     +TABS.map(t=>'<button class="tab-btn'+(activeTab===t.id?" active":"")+(t.locked?" locked":"")+'" onclick="'+(t.locked?"abrirModalPremium()":"switchTab('"+t.id+"')")+'" data-tab="'+t.id+'">'
@@ -624,15 +709,16 @@ function bindDashboard(){renderTab();}
 function switchTab(id){
   activeTab=id;
   document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
-  renderTab();guardarLocal();
+  renderTab();track("tab_viewed",{tab:id});guardarLocal();
 }
 function renderTab(){
   const el=document.getElementById("tab-content");
   if(!el)return;
+  if(activeTab==="situacion")el.innerHTML=renderTabSituacion();
   if(activeTab==="plan")el.innerHTML=renderTabPlan();
   if(activeTab==="deudas")el.innerHTML=renderTabDeudas();
-  if(activeTab==="ia")el.innerHTML=renderTabIA();
-  if(activeTab==="plus")el.innerHTML=renderTabPlus();
+  if(activeTab==="progreso")el.innerHTML=renderTabProgreso();
+  if(activeTab==="informe")el.innerHTML=renderTabInformeCompleto();
 }
 
 
@@ -790,10 +876,34 @@ function renderRadiografia() {
     +'<div style="font-size:16px;color:rgba(255,255,255,.8);font-weight:700;margin-bottom:8px;">Aproximadamente '+r.mesCalifica+'</div>'
     +'<div style="font-size:14px;color:#8390b5;line-height:1.6;">Siguiendo el plan asignado y sin tomar nuevas deudas. Esta es una proyeccion basada en los datos que declaraste.</div>')
     +'<div style="margin-top:14px;padding:12px 14px;background:rgba(61,220,255,.08);border:1px solid rgba(61,220,255,.15);border-radius:12px;font-size:13px;color:#8390b5;line-height:1.6;">'
-    +'<strong style="color:#40d7ff;">Para confirmar esta proyeccion</strong> necesitas saber exactamente que ve el banco sobre vos. Eso es lo que incluye Reset Plus.'
+    +'<strong style="color:#40d7ff;">Para confirmar esta proyeccion</strong> necesitas saber exactamente que ve el banco sobre vos. Eso es lo que incluye Informe Completo.'
     +'</div>'
     +'</div>'
 
+    +'</div>';
+}
+
+// =============================================================================
+// TAB: MI SITUACION
+// =============================================================================
+function renderTabSituacion(){
+  const d=diag;
+  const fin=d.fin;
+  const prio=d.prio;
+  return '<div class="fade">'
+    +'<div class="plan-card" style="border-color:'+colorScore(d.scoreReset)+'33;">'
+    +'<div class="plan-badge" style="background:'+colorScore(d.scoreReset)+'20;color:'+colorScore(d.scoreReset)+';">Diagnóstico resumido</div>'
+    +'<div class="plan-title-big">'+d.causaLabel+'</div>'
+    +'<div class="plan-desc">Tu situación no se define por un número. El punto central detectado es: <strong style="color:white;">'+d.causaLabel+'</strong>. Desde ahí armamos el plan.</div>'
+    +'<div class="metrics">'
+    +'<div class="metric"><small>Score Mi Plan</small><strong style="color:'+colorScore(d.scoreReset)+';">'+d.scoreReset+'</strong><div style="font-size:14px;color:#8390b5;margin-top:6px;">de 30</div></div>'
+    +'<div class="metric"><small>Nivel</small><strong style="color:'+colorNivel(d.nivelR)+';font-size:30px;">'+nivelTexto(d.nivelR)+'</strong></div>'
+    +'<div class="metric"><small>Flujo libre</small><strong style="color:'+(fin.flujoLibre<0?'#ff4e72':'#34ffaf')+';">'+fmt(fin.flujoLibre)+'</strong></div>'
+    +'<div class="metric"><small>Capacidad segura</small><strong style="color:#40d7ff;">'+fmt(d.capacidadSeguraAtaque)+'</strong><div style="font-size:14px;color:#8390b5;margin-top:6px;">para atacar deuda sin ahogarte</div></div>'
+    +'</div>'
+    +'</div>'
+    +(prio?'<div class="priority-card"><div style="font-size:13px;font-weight:800;color:#ff4e72;text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;">Deuda más sensible</div><div style="font-size:28px;font-weight:900;margin-bottom:10px;">'+(prio.acreedor||DEBT_TYPES.find(t=>t.v===prio.tipo)?.l||'Deuda principal')+'</div><div style="font-size:18px;color:#b3bed8;line-height:1.6;">Por monto, pago mensual, tasa estimada y estado, esta es la deuda que más conviene mirar primero.</div></div>':'')
+    +renderReportActions()
     +'</div>';
 }
 
@@ -890,12 +1000,15 @@ function renderTabPlan(){
     // Herramientas del plan
     +renderHerramientas()
 
-    // CTA Premium
+    // Acciones de informe
+    +renderReportActions()
+
+    // CTA Informe Completo
     +'<div class="premium-card">'
-    +'<div class="premium-badge">Opcional · siguiente nivel</div>'
-    +'<div class="premium-title">Reset Plus</div>'
-    +'<div class="premium-text">Si queres profundizar el analisis, accede a tu informe Clearing interpretado con inteligencia artificial y un plan basado en tus datos reales.</div>'
-    +'<button class="btn btn-secondary" style="height:68px;font-size:20px;" onclick="abrirModalPremium()">Conocer Reset Plus</button>'
+    +'<div class="premium-badge">Opcional · Informe Completo</div>'
+    +'<div class="premium-title">Informe Completo</div>'
+    +'<div class="premium-text">Si queres profundizar el analisis, accede a Clearing, Central de Riesgos BCU y un informe IA cruzando todos tus datos reales.</div>'
+    +'<button class="btn btn-secondary" style="height:68px;font-size:20px;" onclick="abrirModalPremium()">Ver Informe Completo</button>'
     +'</div>'
 
     +'</div>';
@@ -934,6 +1047,58 @@ function editarDeuda(i,v){deudas[i].monto=v;deudas[i].cancelada=false;recalcular
 function recalcular(){diag=calcularMotor();guardarLocal();enviarCRM("reset_profile_updated",diag);}
 
 // =============================================================================
+// TAB: MI PROGRESO
+// =============================================================================
+function renderTabProgreso(){
+  const d=diag;
+  const fin=d.fin;
+  const progreso=saldoInicial>0?Math.max(0,(saldoInicial-fin.totalDeuda)/saldoInicial*100):0;
+  track("progress_viewed",{score:d.scoreReset,nivel:d.nivelR});
+  return '<div class="fade">'
+    +'<div class="plan-card">'
+    +'<div class="plan-badge" style="background:rgba(64,215,255,.15);color:#40d7ff;">Seguimiento</div>'
+    +'<div class="plan-title-big">Tu avance</div>'
+    +'<div class="plan-desc">La mejora real no pasa por mirar el score todos los días. Pasa por sostener acciones durante 30, 90 y 180 días.</div>'
+    +'<div class="metrics">'
+    +'<div class="metric"><small>Día actual</small><strong style="color:#40d7ff;">'+d.diasRec+'</strong></div>'
+    +'<div class="metric"><small>Deuda reducida</small><strong style="color:'+(progreso>0?'#34ffaf':'#8390b5')+';">'+Math.round(progreso)+'%</strong></div>'
+    +'<div class="metric"><small>Inicio</small><strong>'+fmt(saldoInicial)+'</strong></div>'
+    +'<div class="metric"><small>Hoy</small><strong>'+fmt(fin.totalDeuda)+'</strong></div>'
+    +'</div>'
+    +'<div class="progress-wrap" style="margin-top:18px;"><div class="progress-bar" style="width:'+progreso+'%;background:'+(progreso>50?'#34ffaf':progreso>20?'#ffd36f':'#ff4e72')+';"></div></div>'
+    +'</div>'
+    +renderHorizontes()
+    +'</div>';
+}
+
+function renderHorizontes(){
+  if(!diag||!diag.horizontes)return '';
+  const h=diag.horizontes;
+  return '<div class="plan-card">'
+    +'<div style="font-size:14px;color:#8390b5;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:16px;">Horizontes de recuperación</div>'
+    +[['30 días',h.d30],['90 días',h.d90],['180 días',h.d180]].map(([t,txt],i)=>'<div class="prioridad-item"><div class="prioridad-num" style="background:rgba(64,215,255,.15);color:#40d7ff;">'+(i+1)+'</div><div><div style="font-size:19px;font-weight:900;margin-bottom:4px;">'+t+'</div><div class="prioridad-text">'+txt+'</div></div></div>').join('')
+    +'</div>';
+}
+
+// =============================================================================
+// TAB: INFORME COMPLETO
+// =============================================================================
+function renderTabInformeCompleto(){
+  return '<div class="fade">'
+    +'<div class="locked-overlay">'
+    +'<div class="locked-blur" style="height:320px;background:rgba(255,255,255,.03);border-radius:22px;"></div>'
+    +'<div class="locked-gate">'
+    +'<div class="locked-icon">📊</div>'
+    +'<div class="locked-title">Informe Completo</div>'
+    +'<div class="locked-text">Incluye Clearing, Central de Riesgos BCU y un informe IA cruzando encuesta, deudas, gastos e historial real.</div>'
+    +'<button class="btn btn-primary" style="height:68px;font-size:20px;" onclick="abrirModalPremium()">Ver opciones</button>'
+    +'<div style="margin-top:12px;font-size:16px;color:#8390b5;">No promete aprobación. Te muestra qué ve el sistema financiero.</div>'
+    +'</div></div>'
+    +renderReportActions()
+    +'</div>';
+}
+
+// =============================================================================
 // TAB: ASISTENTE IA
 // =============================================================================
 function renderTabIA(){
@@ -944,7 +1109,7 @@ function renderTabIA(){
       +'<div class="locked-icon">🤖</div>'
       +'<div class="locked-title">Asistente IA</div>'
       +'<div class="locked-text">El asistente analiza tu informe Clearing con inteligencia artificial y te da recomendaciones especificas para tu caso.</div>'
-      +'<button class="btn btn-primary" style="height:68px;font-size:20px;" onclick="abrirModalPremium()">Conocer Reset Plus</button>'
+      +'<button class="btn btn-primary" style="height:68px;font-size:20px;" onclick="abrirModalPremium()">Ver Informe Completo</button>'
       +'</div></div></div>';
   }
   return '<div class="fade">'+renderTabIAContent()+'</div>';
@@ -968,7 +1133,7 @@ function renderTabPlus(){
       +'<div class="locked-icon">📊</div>'
       +'<div class="locked-title">Informe Clearing</div>'
       +'<div class="locked-text">Mira exactamente que informacion tiene registrada el sistema financiero sobre vos — deudas, atrasos, consultas y mas.</div>'
-      +'<button class="btn btn-primary" style="height:68px;font-size:20px;" onclick="abrirModalPremium()">Conocer Reset Plus</button>'
+      +'<button class="btn btn-primary" style="height:68px;font-size:20px;" onclick="abrirModalPremium()">Ver Informe Completo</button>'
       +'<div style="margin-top:12px;font-size:16px;color:#8390b5;">Desde UYU 990 · Garantia 7 dias</div>'
       +'</div></div></div>';
   }
@@ -1340,10 +1505,63 @@ function updateAtraso(key,estado){
 }
 
 // =============================================================================
+// INFORME IMPRIMIBLE / PDF BROWSER
+// =============================================================================
+function renderReportActions(){
+  return '<div class="plan-card" style="border-color:rgba(64,215,255,.18);">'
+    +'<div class="plan-badge" style="background:rgba(64,215,255,.12);color:#40d7ff;">Informe gratis</div>'
+    +'<div style="font-size:28px;font-weight:900;margin-bottom:12px;">Guardá tu diagnóstico</div>'
+    +'<div class="plan-desc">Podés imprimirlo o guardarlo como PDF desde el navegador. La opción de email queda preparada para la próxima etapa.</div>'
+    +'<div class="grid">'
+    +'<button class="btn btn-primary" style="height:64px;font-size:19px;" onclick="abrirInformeImprimible()">Imprimir / guardar PDF</button>'
+    +'<button class="btn btn-secondary" style="height:64px;font-size:18px;opacity:.75;" onclick="solicitarInformeEmail()">Enviarme por email · Próximamente</button>'
+    +'</div>'
+    +'</div>';
+}
+
+function solicitarInformeEmail(){
+  track("report_email_interest",{status:"coming_soon",email:PRE.email||null,score:diag?.scoreReset,nivel:diag?.nivelR,causa_principal:diag?.causaPrincipal});
+  alert("Próximamente vas a poder recibir este informe por email. Ya registramos tu interés.");
+}
+
+function abrirInformeImprimible(){
+  if(!diag){alert("Primero generá tu Mi Plan.");return;}
+  track("report_printed",{score:diag.scoreReset,nivel:diag.nivelR,causa_principal:diag.causaPrincipal});
+  const html=generarHTMLInforme();
+  const w=window.open("","_blank");
+  if(!w){alert("El navegador bloqueó la ventana emergente. Permití popups para imprimir el informe.");return;}
+  w.document.open();
+  w.document.write(html);
+  w.document.close();
+  w.focus();
+}
+
+function generarHTMLInforme(){
+  const d=diag;
+  const fin=d.fin;
+  const prio=d.prio;
+  const r=calcularRadiografia();
+  const deudaNombre=prio?(prio.acreedor||DEBT_TYPES.find(t=>t.v===prio.tipo)?.l||"Deuda principal"):"Sin deuda prioritaria";
+  const fecha=new Date().toLocaleDateString("es-UY");
+  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Credizona Mi Plan - Informe</title>'
+    +'<style>body{font-family:Inter,Arial,sans-serif;color:#111827;background:#fff;margin:0;padding:32px;line-height:1.45}.wrap{max-width:760px;margin:auto}.brand{font-size:26px;font-weight:900;margin-bottom:4px}.muted{color:#6b7280}.hero{border:1px solid #e5e7eb;border-radius:20px;padding:24px;margin:24px 0;background:#f8fafc}h1{font-size:34px;line-height:1.05;margin:0 0 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.box{border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-bottom:12px}.label{font-size:11px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.08em}.val{font-size:28px;font-weight:900;margin-top:4px}.danger{color:#dc2626}.good{color:#059669}.warn{color:#d97706}.section{margin-top:26px}ul{padding-left:20px}.cta{background:#0f172a;color:white;border-radius:18px;padding:22px;margin-top:26px}.small{font-size:12px;color:#6b7280}@media print{button{display:none}body{padding:0}.wrap{max-width:none}}</style></head><body>'
+    +'<div class="wrap"><button onclick="window.print()" style="float:right;padding:10px 16px;border-radius:10px;border:0;background:#2563eb;color:white;font-weight:800;cursor:pointer;">Imprimir / guardar PDF</button>'
+    +'<div class="brand">Credizona Mi Plan</div><div class="muted">Informe generado el '+fecha+'</div>'
+    +'<div class="hero"><h1>'+d.causaLabel+'</h1><p>Este informe resume tu diagnóstico declarado, tu deuda más sensible, tu plan sugerido y los próximos pasos. No es un score crediticio oficial ni promete aprobación.</p></div>'
+    +'<div class="grid"><div class="box"><div class="label">Score Mi Plan</div><div class="val">'+d.scoreReset+'/30</div></div><div class="box"><div class="label">Nivel</div><div class="val">'+nivelTexto(d.nivelR)+'</div></div><div class="box"><div class="label">Flujo libre mensual</div><div class="val '+(fin.flujoLibre<0?'danger':'good')+'">'+fmt(fin.flujoLibre)+'</div></div><div class="box"><div class="label">Capacidad segura de ataque</div><div class="val">'+fmt(d.capacidadSeguraAtaque)+'</div></div></div>'
+    +'<div class="section"><h2>Deuda prioritaria</h2><div class="box"><strong>'+deudaNombre+'</strong><br>Monto: '+fmt(prio?prio.monto:0)+' · Pago mensual: '+fmt(prio?prio.pago:0)+' · Tasa estimada: '+(prio?(TASAS[prio.tipo]||62):0)+'% TNA</div></div>'
+    +'<div class="section"><h2>Radiografía financiera</h2><div class="grid"><div class="box"><div class="label">Intereses estimados por mes</div><div class="val danger">'+fmt(Math.round(r.interesMensualTotal))+'</div></div><div class="box"><div class="label">Sueldo comprometido</div><div class="val warn">'+r.pctComprometido+'%</div></div></div><p class="small">Basado en tasas estimadas de mercado. Tu tasa real puede variar.</p></div>'
+    +'<div class="section"><h2>Plan sugerido</h2><div class="box"><strong>'+d.plan.titulo+'</strong><p>'+d.plan.objetivo+'</p><ul>'+d.plan.prioridades.map(p=>'<li>'+p+'</li>').join('')+'</ul></div></div>'
+    +'<div class="section"><h2>Horizontes</h2><div class="box"><strong>30 días:</strong> '+d.horizontes.d30+'</div><div class="box"><strong>90 días:</strong> '+d.horizontes.d90+'</div><div class="box"><strong>180 días:</strong> '+d.horizontes.d180+'</div></div>'
+    +'<div class="cta"><h2>Informe Completo</h2><p>Para confirmar lo que realmente ve el sistema financiero, el Informe Completo cruza Clearing, Central de Riesgos BCU e IA sobre tus datos.</p></div>'
+    +'</div></body></html>';
+}
+
+// =============================================================================
 // MODAL PREMIUM
 // =============================================================================
 function abrirModalPremium(){
-  track("view_reset_plus",{plan:diag?.planId,score:diag?.scoreReset});
+  track("informe_completo_opened",{plan:diag?.planId,score:diag?.scoreReset,nivel:diag?.nivelR,causa_principal:diag?.causaPrincipal});
   document.getElementById("modal-premium-content").innerHTML=renderModalPremium();
   abrirModal("modal-premium");
 }
@@ -1351,12 +1569,12 @@ function renderModalPremium(){
   return '<div style="max-height:85vh;overflow-y:auto;">'
     +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;">'
     +'<div>'
-    +'<div class="premium-badge">Opcional · siguiente nivel</div>'
+    +'<div class="premium-badge">Opcional · Informe Completo</div>'
     +'<div style="font-size:32px;font-weight:900;line-height:1.1;margin-top:6px;">Entende exactamente<br>que ve el banco sobre vos.</div>'
     +'</div>'
     +'<button onclick="cerrarModal(\'modal-premium\')" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:12px;width:44px;height:44px;color:rgba(255,255,255,.7);font-size:20px;cursor:pointer;flex-shrink:0;">×</button>'
     +'</div>'
-    +'<div class="premium-text">Tu diagnostico actual esta basado en lo que vos declaraste. Reset Plus accede a tu historial real en el sistema financiero y lo interpreta con inteligencia artificial.</div>'
+    +'<div class="premium-text">Tu diagnostico actual esta basado en lo que vos declaraste. Informe Completo cruza tu historial real en el sistema financiero, Clearing, BCU y tus datos declarados con inteligencia artificial.</div>'
 
     // Lo que recibis
     +'<div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:22px;padding:22px;margin-bottom:18px;">'
@@ -1378,7 +1596,7 @@ function renderModalPremium(){
     +'<div style="font-size:13px;color:#8390b5;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Una vez</div>'
     +'<div class="price-amount">990</div>'
     +'<div class="price-label">UYU · pago unico</div>'
-    +'<div class="price-desc">1 informe Clearing + analisis IA. Sin compromiso.</div>'
+    +'<div class="price-desc">Clearing + BCU + análisis IA. Sin compromiso.</div>'
     +'<button class="btn btn-secondary" style="width:100%;height:56px;font-size:17px;margin-top:14px;">Elegir este plan</button>'
     +'</div>'
     +'<div class="pricing-card featured" onclick="seleccionarPlan(\'trimestral\')">'
@@ -1387,7 +1605,7 @@ function renderModalPremium(){
     +'<div class="price-amount">1.290</div>'
     +'<div class="savings-badge">Ahorras UYU 180</div>'
     +'<div class="price-label">UYU · pago unico</div>'
-    +'<div class="price-desc">3 informes Clearing (dia 0, 30 y 60) + 3 analisis IA. Sin sorpresas.</div>'
+    +'<div class="price-desc">3 revisiones (día 0, 30 y 60) + análisis IA. Sin sorpresas.</div>'
     +'<button class="btn btn-primary" style="width:100%;height:56px;font-size:17px;margin-top:14px;">Elegir trimestral</button>'
     +'</div>'
     +'</div>'
@@ -1397,20 +1615,20 @@ function renderModalPremium(){
     +'<div style="font-size:15px;color:#8390b5;line-height:1.6;">El <strong style="color:rgba(255,255,255,.9);">pago unico</strong> es para entender tu situacion ahora. El <strong style="color:rgba(255,255,255,.9);">trimestral</strong> actualiza tu informe en los dias 30 y 60, y te avisa cuando tu perfil esta listo para volver a pedir el credito.</div>'
     +'</div>'
 
-    +'<div style="text-align:center;font-size:15px;color:#8390b5;">Si en 7 dias no te ayudo, te devolvemos el dinero. El informe es provisto por Clearing de Informes Uruguay.</div>'
+    +'<div style="text-align:center;font-size:15px;color:#8390b5;">Si en 7 dias no te ayudo, te devolvemos el dinero. No promete aprobación. Te ayuda a entender qué ve el sistema financiero.</div>'
     +'</div>';
 }
 function seleccionarPlan(tipo){
-  track("click_reset_plus",{tipo,plan:diag?.planId});
+  track("informe_completo_checkout_started",{tipo,plan:diag?.planId,score:diag?.scoreReset,nivel:diag?.nivelR});
   cerrarModal("modal-premium");
-  alert("Redirigiendo al pago... (TODO: integrar pasarela de pago)");
+  alert("Redirigiendo al pago... (TODO: integrar pasarela de pago). El evento informe_completo_purchased queda reservado para cuando exista pago real.");
 }
 
 // =============================================================================
 // FOOTER
 // =============================================================================
 function renderFooter(){
-  return '<div class="footer"><strong>Credizona Reset</strong>Herramienta de evaluacion financiera para volver a tener oportunidades.</div>';
+  return '<div class="footer"><strong>Credizona Mi Plan</strong>Herramienta de evaluacion financiera para volver a tener oportunidades.</div>';
 }
 
 // =============================================================================
