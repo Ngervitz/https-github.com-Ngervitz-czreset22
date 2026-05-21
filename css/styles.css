@@ -114,9 +114,12 @@ select { appearance: none; }
 }
 
 .header-badges {
-  margin-left: auto;
   display: flex;
   gap: 6px;
+}
+
+.header-actions {
+  margin-left: auto;
 }
 
 .header-badge {
