@@ -685,3 +685,63 @@ select option{background:#0a1026;}
   .sticky-step{max-width:145px;}
   .sticky-btn{min-width:126px;font-size:16px;padding:0 15px;}
 }
+@media (max-width: 768px) {
+
+  .card,
+  .panel,
+  .dashboard-card,
+  .metric-card {
+    padding: 18px !important;
+    border-radius: 20px !important;
+  }
+
+  h1,
+  .hero-title {
+    font-size: 42px !important;
+    line-height: 1.05 !important;
+  }
+
+  h2 {
+    font-size: 32px !important;
+    line-height: 1.1 !important;
+  }
+
+  p,
+  .description,
+  .subtitle {
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+  }
+
+  input,
+  select {
+    height: 58px !important;
+    font-size: 22px !important;
+    padding: 0 18px !important;
+  }
+
+  .sticky-footer,
+  .bottom-bar,
+  .cta-bar {
+    padding: 12px 16px !important;
+    min-height: 78px !important;
+  }
+
+  .sticky-footer .btn,
+  .bottom-bar .btn,
+  .cta-bar .btn {
+    height: 54px !important;
+    font-size: 20px !important;
+    border-radius: 18px !important;
+    padding: 0 22px !important;
+  }
+
+  .score-big {
+    font-size: 54px !important;
+  }
+
+  .dashboard-grid {
+    gap: 14px !important;
+  }
+
+}
