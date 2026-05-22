@@ -888,7 +888,7 @@ function renderHerramientasPlan5() {
 // MODAL PREMIUM
 // =============================================================================
 function renderModalPremium() {
-  return '<div style="max-height:85vh;overflow-y:auto;">'
+  return '<div>'
     + '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;">'
     + '<div><div class="premium-badge">Opcional · siguiente nivel</div>'
     + '<div style="font-size:32px;font-weight:900;line-height:1.1;margin-top:6px;">Entende exactamente<br>que ve el banco sobre vos.</div></div>'
