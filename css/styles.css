@@ -765,18 +765,23 @@ select option{background:#0a1026;}
 }
 @media (max-width: 768px) {
   .modal-overlay:not(#modal-nuevo) {
-    align-items: stretch !important;
+    position: fixed !important;
+    inset: 0 !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
     overflow: hidden !important;
+    padding: 0 !important;
   }
 
   .modal-overlay:not(#modal-nuevo) .modal-box {
     width: 100% !important;
-    height: 100dvh !important;
-    max-height: 100dvh !important;
+    height: 100svh !important;
+    max-height: 100svh !important;
     border-radius: 0 !important;
     overflow-y: auto !important;
-    padding: 18px 18px 120px !important;
-    -webkit-overflow-scrolling: touch;
+    padding: calc(env(safe-area-inset-top) + 72px) 18px 140px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-padding-top: 90px !important;
   }
 
   .modal-overlay:not(#modal-nuevo) .modal-box > div {
@@ -785,12 +790,14 @@ select option{background:#0a1026;}
   }
 
   .informe-back-btn {
-    position: sticky !important;
-    top: 0 !important;
-    z-index: 999 !important;
-    width: 100% !important;
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top) + 12px) !important;
+    left: 18px !important;
+    right: 18px !important;
+    z-index: 9999 !important;
+    width: auto !important;
     justify-content: center !important;
-    margin: 0 0 18px 0 !important;
+    margin: 0 !important;
     background: rgba(15, 20, 45, .98) !important;
   }
 }
