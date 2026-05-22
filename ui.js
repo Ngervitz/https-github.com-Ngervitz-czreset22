@@ -912,34 +912,77 @@ function renderModalPremium() {
     + '</div>';
 }
 
+```js
 function abrirModalPremium() {
   var diag    = _diag();
   var content = document.getElementById("modal-premium-content");
   var overlay = document.getElementById("modal-premium");
-  track("view_reset_plus", { plan: diag && diag.planId, score: diag && diag.scoreReset });
-  if (content) content.innerHTML = renderModalPremium();
+
+  track("view_reset_plus", {
+    plan: diag && diag.planId,
+    score: diag && diag.scoreReset
+  });
+
+  if (content) {
+    content.innerHTML = renderModalPremium();
+
+    // eliminar scroll interno
+    content.style.maxHeight = "none";
+    content.style.overflow = "visible";
+  }
+
   if (overlay) {
+
+    // bloquear scroll del fondo
+    document.body.style.overflow = "hidden";
+
     overlay.classList.remove("hidden");
+
+    var modalBox = overlay.querySelector(".modal-box");
+
+    if (modalBox) {
+      modalBox.style.overflowY = "auto";
+      modalBox.style.webkitOverflowScrolling = "touch";
+      modalBox.style.maxHeight = "100dvh";
+      modalBox.style.height = "100dvh";
+      modalBox.scrollTop = 0;
+    }
+
+    function cerrarModal() {
+      overlay.classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+
     var closeBtn = document.getElementById("btn-cerrar-premium");
-    if (closeBtn) closeBtn.addEventListener("click", function() { overlay.classList.add("hidden"); });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", cerrarModal);
+    }
+
     overlay.querySelectorAll("[data-elegir-plan]").forEach(function(btn) {
+
       btn.addEventListener("click", function() {
+
         var tipo = btn.getAttribute("data-elegir-plan");
-        track("click_reset_plus", { tipo: tipo, plan: diag && diag.planId });
-        overlay.classList.add("hidden");
+
+        track("click_reset_plus", {
+          tipo: tipo,
+          plan: diag && diag.planId
+        });
+
+        cerrarModal();
+
         alert("Redirigiendo al pago... (TODO IT: integrar pasarela de pago)");
       });
+
+    });
+
+    // cerrar tocando afuera
+    overlay.addEventListener("click", function(e) {
+      if (e.target === overlay) {
+        cerrarModal();
+      }
     });
   }
 }
-
-// Namespace unico — app.js llama window.CredizonaUI.X()
-window.CredizonaUI = {
-  renderAll:          renderAll,
-  renderTab:          renderTab,
-  renderDeudaCard:    renderDeudaCard,
-  actualizarMetrics:  actualizarMetrics,
-  bindTabEvents:      bindTabEvents,
-  abrirModalPremium:  abrirModalPremium,
-  mostrarEvaluacion:  mostrarEvaluacion,
-};
+```
