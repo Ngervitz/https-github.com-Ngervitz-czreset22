@@ -934,7 +934,7 @@ function abrirModalPremium() {
 
     // Reset scroll al tope — sin tocar inline styles del modal-box
     var modalBox = overlay.querySelector(".modal-box");
-    if (modalBox) modalBox.scrollTop = 0;
+    overlay.scrollTop = 0;
 
     function cerrarModal() {
   overlay.classList.add("hidden");
