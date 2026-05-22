@@ -764,40 +764,28 @@ select option{background:#0a1026;}
   backdrop-filter: blur(10px);
 }
 @media (max-width: 768px) {
-  .modal-overlay:not(#modal-nuevo) {
+  .informe-back-btn {
     position: fixed !important;
-    inset: 0 !important;
-    align-items: flex-start !important;
-    justify-content: flex-start !important;
-    overflow: hidden !important;
-    padding: 0 !important;
+    left: 18px !important;
+    right: 18px !important;
+    bottom: calc(env(safe-area-inset-bottom) + 92px) !important;
+    top: auto !important;
+    z-index: 99999 !important;
+    width: auto !important;
+    height: 54px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: linear-gradient(90deg,#5b7cff,#3ddcff) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 18px !important;
+    font-size: 17px !important;
+    font-weight: 900 !important;
+    box-shadow: 0 10px 35px rgba(0,0,0,.35) !important;
   }
 
   .modal-overlay:not(#modal-nuevo) .modal-box {
-    width: 100% !important;
-    height: 100svh !important;
-    max-height: 100svh !important;
-    border-radius: 0 !important;
-    overflow-y: auto !important;
-    padding: calc(env(safe-area-inset-top) + 72px) 18px 140px !important;
-    -webkit-overflow-scrolling: touch !important;
-    scroll-padding-top: 90px !important;
-  }
-
-  .modal-overlay:not(#modal-nuevo) .modal-box > div {
-    max-height: none !important;
-    overflow: visible !important;
-  }
-
-  .informe-back-btn {
-    position: fixed !important;
-    top: calc(env(safe-area-inset-top) + 12px) !important;
-    left: 18px !important;
-    right: 18px !important;
-    z-index: 9999 !important;
-    width: auto !important;
-    justify-content: center !important;
-    margin: 0 !important;
-    background: rgba(15, 20, 45, .98) !important;
+    padding-bottom: 180px !important;
   }
 }
