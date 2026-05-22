@@ -429,9 +429,9 @@ function updateSticky() {
   const st=document.getElementById("sticky-step");
   const cta=document.getElementById("sticky-cta");
   if(step===0&&SEGMENTO===1){lbl.textContent="Evaluacion inicial";st.textContent="Ver mi evaluacion y continuar";cta.textContent="Ver evaluacion";cta.className="sticky-btn";cta.onclick=next;}
-  else if(step===0||step===1){lbl.textContent="Paso "+(SEGMENTO===1?2:1)+" de "+(SEGMENTO===1?3:2);st.textContent="Completa tus gastos mensuales";cta.textContent="Continuar";cta.className="sticky-btn";cta.onclick=next;}
-  else if(step===2){lbl.textContent="Ultimo paso";st.textContent="Genera tu diagnostico completo";cta.textContent="Ver mi plan";cta.className="sticky-btn";cta.onclick=next;}
-  else if(step===3){lbl.textContent=diag?.plan?.cta||"Tu plan";st.textContent="Profundizá con Informe Completo";cta.textContent="Informe Completo";cta.className="sticky-btn informe";cta.onclick=abrirModalPremium;}
+  else if(step===0||step===1){lbl.textContent="Paso "+(SEGMENTO===1?2:1)+" de "+(SEGMENTO===1?3:2);st.textContent="Completa tus gastos";cta.textContent="Continuar";cta.className="sticky-btn";cta.onclick=next;}
+  else if(step===2){lbl.textContent="Ultimo paso";st.textContent="Genera tu plan";cta.textContent="Ver mi plan";cta.className="sticky-btn";cta.onclick=next;}
+  else if(step===3){lbl.textContent=diag?.plan?.cta||"Tu plan";st.textContent="Informe Completo";cta.textContent="Informe Completo";cta.className="sticky-btn informe";cta.onclick=abrirModalPremium;}
 }
 
 // =============================================================================
@@ -523,7 +523,7 @@ function renderGastos() {
 
   html+='<div class="card">'
     +'<div class="section-title">Gastos mensuales</div>'
-    +'<div class="section-text">No necesitas montos exactos. Una estimacion ya nos permite detectar patrones financieros importantes.</div>'
+    +'<div class="section-text">No precisas montos exactos. Una estimacion alcanza.</div>'
 
     // Accordion
     +EXPENSE_CATS.map((c,i)=>{
@@ -577,7 +577,7 @@ function renderDeudas() {
   let html=renderStepPills(SEGMENTO===1?2:1,SEGMENTO===1?3:2);
   html+='<div class="card">'
     +'<div class="section-title">Tus deudas</div>'
-    +'<div class="section-text">El acreedor y el tipo de deuda son fundamentales para detectar que deuda te esta danando mas y por donde empezar.</div>'
+    +'<div class="section-text">Cargá tus deudas principales. Con eso detectamos por dónde empezar.</div>'
     +'<div id="deudas-container">'+deudas.map((d,i)=>renderDeudaCard(d,i)).join("")+'</div>'
     +'<button class="btn btn-secondary" style="height:68px;font-size:20px;margin-bottom:0;" onclick="agregarDeuda()">+ Agregar deuda</button>'
 
