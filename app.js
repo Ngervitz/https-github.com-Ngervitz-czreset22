@@ -281,6 +281,63 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
   });
+  // Cerrar / volver desde Informe Completo
+  function cerrarInformeCompleto() {
+    var modals = ["modal-informe", "modal-premium", "modal-informe-completo"];
 
+    modals.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.add("hidden");
+    });
+
+    document.body.style.overflow = "";
+
+    if (window.CZState && window.CZState.step === 3) {
+      window.CZState.tab = "situacion";
+      if (window.CredizonaUI && window.CredizonaUI.renderAll) {
+        window.CredizonaUI.renderAll();
+      }
+    }
+  }
+
+  window.cerrarInformeCompleto = cerrarInformeCompleto;
+
+  function instalarBotonCerrarInformeCompleto() {
+    if (!window.CredizonaUI || !window.CredizonaUI.abrirModalInformeCompleto) return;
+
+    var abrirOriginal = window.CredizonaUI.abrirModalInformeCompleto;
+
+    window.CredizonaUI.abrirModalInformeCompleto = function() {
+      var resultado = abrirOriginal.apply(this, arguments);
+
+      setTimeout(function() {
+        var modal =
+          document.getElementById("modal-informe") ||
+          document.getElementById("modal-premium") ||
+          document.getElementById("modal-informe-completo") ||
+          document.querySelector(".modal-overlay:not(#modal-nuevo):not(.hidden)");
+
+        var box =
+          document.getElementById("modal-informe-content") ||
+          document.getElementById("modal-premium-content") ||
+          document.getElementById("modal-informe-completo-content") ||
+          (modal ? modal.querySelector(".modal-box") : null);
+
+        if (!box || box.querySelector(".informe-back-btn")) return;
+
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "informe-back-btn";
+        btn.innerHTML = "← Volver al resumen";
+        btn.onclick = cerrarInformeCompleto;
+
+        box.insertBefore(btn, box.firstChild);
+      }, 0);
+
+      return resultado;
+    };
+  }
+
+  instalarBotonCerrarInformeCompleto();
   init();
 });
