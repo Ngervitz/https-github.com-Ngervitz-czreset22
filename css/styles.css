@@ -301,36 +301,49 @@ select option{background:#0a1026;}
 .price-label{font-size:13px;color:#8390b5;margin-bottom:12px;}
 .price-desc{font-size:15px;color:#8390b5;line-height:1.5;}
 
-/* MODAL — FIX FINAL */
-/* MODAL — FIX FINAL */
-.modal-overlay{
-  position:fixed;
-  inset:0;
-  z-index:200;
-  background:rgba(0,0,0,.82);
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  display:block;
-  padding-top:24px;
-  padding-bottom:24px;
+/* MODAL OVERLAY: Ahora centra el modal de forma perfecta en cualquier pantalla */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 200;
+  display: flex;
+  align-items: center;     /* ← Centrado vertical perfecto */
+  justify-content: center;   /* ← Centrado horizontal perfecto */
+  padding: 16px;            /* ← Margen de seguridad para que nunca toque los bordes del celular */
 }
 
-.modal-box{
-  background:linear-gradient(180deg,#0f1738,#09112e);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:32px 32px 0 0;
-  width:100%;
-  max-width:820px;
-  margin:0 auto;
-  min-height:auto;
-  max-height:none;
-  overflow:visible;
-  padding:28px 22px 56px;
+/* MODAL BOX: Limita el tamaño físico exterior de la tarjeta */
+.modal-box {
+  background: linear-gradient(180deg, #0f1738, #09112e);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;      /* ← Bordes redondeados completos uniformes */
+  max-width: 820px;
+  width: 100%;
+  max-height: 85vh;         /* ← Ocupa como máximo el 85% de la pantalla del celular */
+  display: flex;            /* ← Convertimos en flex para separar el Header del Cuerpo */
+  flex-direction: column;
+  overflow: hidden;         /* ← EVITA que la tarjeta entera se estire o rompa */
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-.modal-box > div{
-  overflow:visible!important;
-  max-height:none!important;
+/* NUEVA CLASE: El scroll se lo damos solo al contenido, no a la tarjeta entera */
+.modal-body-scroll {
+  padding: 0 24px 24px 24px;
+  overflow-y: auto;         /* ← El scroll vertical ocurre SOLO acá adentro */
+  -webkit-overflow-scrolling: touch; /* ← Suaviza el scroll en iPhones */
+}
+
+/* Aseguramos que el encabezado del modal quede siempre arriba fijo */
+.modal-header-fixed {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px;
+  background: transparent;  /* Mantiene el gradiente del fondo */
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 @media(max-width:768px){
