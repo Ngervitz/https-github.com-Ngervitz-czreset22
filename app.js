@@ -328,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function() {
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "informe-back-btn";
-        btn.innerHTML = "← Volver";
+        btn.innerHTML = "← Volver al resumen";
         btn.onclick = cerrarInformeCompleto;
 
         box.insertBefore(btn, box.firstChild);
