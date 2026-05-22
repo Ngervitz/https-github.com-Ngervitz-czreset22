@@ -930,15 +930,16 @@ function abrirModalPremium() {
   if (overlay) {
     document.body.style.overflow = "hidden";
     overlay.classList.remove("hidden");
+    document.body.classList.add("modal-open");
 
     // Reset scroll al tope — sin tocar inline styles del modal-box
     var modalBox = overlay.querySelector(".modal-box");
     if (modalBox) modalBox.scrollTop = 0;
 
     function cerrarModal() {
-      overlay.classList.add("hidden");
-      document.body.style.overflow = "";
-    }
+  overlay.classList.add("hidden");
+  document.body.classList.remove("modal-open");
+}
 
     var closeBtn = document.getElementById("btn-cerrar-premium");
     if (closeBtn) closeBtn.onclick = cerrarModal;
