@@ -763,3 +763,34 @@ select option{background:#0a1026;}
   cursor: pointer;
   backdrop-filter: blur(10px);
 }
+@media (max-width: 768px) {
+  .modal-overlay:not(#modal-nuevo) {
+    align-items: stretch !important;
+    overflow: hidden !important;
+  }
+
+  .modal-overlay:not(#modal-nuevo) .modal-box {
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    overflow-y: auto !important;
+    padding: 18px 18px 120px !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-overlay:not(#modal-nuevo) .modal-box > div {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .informe-back-btn {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 999 !important;
+    width: 100% !important;
+    justify-content: center !important;
+    margin: 0 0 18px 0 !important;
+    background: rgba(15, 20, 45, .98) !important;
+  }
+}
